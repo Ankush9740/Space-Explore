@@ -1,0 +1,187 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A modern student-built website about planets, missions and the wonder of space exploration.">
+  <title>Space Explorer | Explore Beyond Earth</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/script.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="navbar container" aria-label="Main navigation">
+      <a class="logo" href="index.html" aria-label="Space Explorer home">
+        <span class="logo-mark" aria-hidden="true"></span>SPACE EXPLORER
+      </a>
+      <button class="menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false">
+        <span></span>
+      </button>
+      <ul class="nav-links">
+        <li><a class="nav-link active" href="index.html" aria-current="page">Home</a></li>
+        <li><a class="nav-link" href="explore.html">Explore</a></li>
+        <li><a class="nav-link" href="missions.html">Missions</a></li>
+        <li><a class="nav-link" href="gallery.html">Gallery</a></li>
+        <li><a class="nav-link" href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-content">
+          <p class="hero-kicker">The universe is waiting</p>
+          <h1>Explore <span>Beyond Earth</span></h1>
+          <p class="hero-copy">Journey through our Solar System, revisit the missions that changed history, and discover how humanity is reaching farther than ever before.</p>
+          <div class="hero-actions">
+            <a class="button" href="explore.html">Start Exploring <span class="button-arrow" aria-hidden="true">→</span></a>
+            <a class="button button-ghost" href="missions.html">View Missions</a>
+          </div>
+        </div>
+      </div>
+      <a class="scroll-cue" href="#about">Scroll to discover</a>
+    </section>
+
+    <section class="section" id="about">
+      <div class="container story-grid">
+        <div class="story-visual reveal" aria-hidden="true">
+          <div class="story-orbit"></div>
+        </div>
+        <div class="story-content reveal delay-1">
+          <p class="eyebrow">Why we explore</p>
+          <h2 class="section-title">Curiosity has no final frontier.</h2>
+          <p>Space exploration helps us understand where we came from and what might exist beyond our world. Every telescope image, rover track, and human mission adds another piece to the story of the cosmos.</p>
+          <ul class="mini-list">
+            <li>Discover worlds beyond our own</li>
+            <li>Advance science and technology</li>
+            <li>Inspire the next generation of explorers</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-soft">
+      <div class="container">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Featured journeys</p>
+          <h2 class="section-title">Three places that changed our view of space.</h2>
+          <p class="section-copy">From our closest neighbor to the deep universe, each destination reveals something new.</p>
+        </div>
+        <div class="card-grid">
+          <article class="feature-card reveal">
+            <div class="feature-image">
+              <img src="images/marss.webp" alt="Stylized view of the red planet Mars" loading="lazy">
+            </div>
+            <div class="card-body">
+              <span class="card-label">Next frontier</span>
+              <h3 class="card-title">Mars</h3>
+              <p class="card-copy">Robotic explorers are uncovering the Red Planet's watery past and preparing the way for future human visitors.</p>
+            </div>
+          </article>
+
+          <article class="feature-card reveal delay-1">
+            <div class="feature-image">
+              <img src="images/moooon.jpg" alt="Lunar lander standing on the Moon" loading="lazy">
+            </div>
+            <div class="card-body">
+              <span class="card-label">Our neighbor</span>
+              <h3 class="card-title">The Moon</h3>
+              <p class="card-copy">The first world humans visited remains a vital laboratory and a stepping stone into deeper space.</p>
+            </div>
+          </article>
+
+          <article class="feature-card reveal delay-2">
+            <div class="feature-image">
+              <img src="images/gal.jpg" alt="Colorful blue and violet nebula" loading="lazy">
+            </div>
+            <div class="card-body">
+              <span class="card-label">Deep space</span>
+              <h3 class="card-title">Distant Galaxies</h3>
+              <p class="card-copy">Powerful telescopes look billions of years into the past, revealing how the earliest galaxies formed.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-heading reveal">
+          <p class="eyebrow">Choose your destination</p>
+          <h2 class="section-title">Journey Beyond Earth</h2>
+          <p class="section-copy">From our closest neighbour to the outer giants, every world has a story waiting to be explored.</p>
+        </div>
+        <div class="destination-grid">
+          <article class="destination-card reveal">
+            <div class="destination-image">
+              <img src="images/mooon.jpeg" alt="Lunar lander on the Moon" loading="lazy">
+            </div>
+            <div class="card-body">
+              <span class="card-label">Closest neighbour</span>
+              <h3 class="card-title">The Moon</h3>
+              <p class="card-copy">Follow the first footsteps beyond Earth.</p>
+              <a class="destination-link" href="missions.html">Explore →</a>
+            </div>
+          </article>
+
+          <article class="destination-card reveal delay-1">
+            <div class="destination-image">
+              <img src="images/maars.avif" alt="The red planet Mars" loading="lazy">
+            </div>
+            <div class="card-body">
+              <span class="card-label">Red frontier</span>
+              <h3 class="card-title">Mars</h3>
+              <p class="card-copy">Discover ancient rivers and robotic trails.</p>
+              <a class="destination-link" href="explore.html">Explore →</a>
+            </div>
+          </article>
+
+          <article class="destination-card reveal delay-2">
+            <div class="destination-image">
+              <img src="images/satuuurn.jpg" alt="Saturn and its bright ring system" loading="lazy">
+            </div>
+            <div class="card-body">
+              <span class="card-label">Ringed giant</span>
+              <h3 class="card-title">Saturn</h3>
+              <p class="card-copy">Travel to a world wrapped in icy rings.</p>
+              <a class="destination-link" href="explore.html">Explore →</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="logo" href="index.html">
+            <span class="logo-mark" aria-hidden="true"></span>SPACE EXPLORER
+          </a>
+          <p>A student project celebrating discovery, science, and humanity's journey beyond Earth.</p>
+        </div>
+        <div class="footer-column">
+          <h2>Navigate</h2>
+          <a href="explore.html">Explore planets</a>
+          <a href="missions.html">Historic missions</a>
+          <a href="gallery.html">Space gallery</a>
+        </div>
+        <div class="footer-column">
+          <h2>Keep exploring</h2>
+          <a href="contact.html">Join the journey</a>
+          <span>Made for curious minds</span>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 Space Explorer</span>
+        <span>Look up. Wonder more.</span>
+      </div>
+    </div>
+  </footer>
+
+  <button class="scroll-top" type="button" aria-label="Scroll to top">↑</button>
+</body>
+</html>
