@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Explore the eight planets of our Solar System and discover a fact about each world.">
   <title>Explore the Solar System | Space Explorer</title>
-  <link rel="stylesheet" href="css/style.css">
-  <script src="js/script.js" defer></script>
+  <link rel="stylesheet" href="css/style.css?v=planet-stream-8">
+  <script src="js/script.js?v=planet-stream-8" defer></script>
 </head>
 <body>
   <header class="site-header">
@@ -40,9 +40,13 @@
       </div>
     </section>
 
-    <section class="section">
-      <div class="container">
+    <section class="section planet-gallery-section" id="planet-gallery">
+      <div class="container planet-gallery-intro">
+        <p class="planet-gallery-hint"><span aria-hidden="true">↔</span> Drag or swipe to travel between worlds</p>
+      </div>
+      <div class="planet-stage" tabindex="0" aria-label="Interactive gallery of the eight planets. Drag horizontally or use the left and right arrow keys to explore.">
         <div class="planet-grid">
+          <div class="planet-motion-wrapper">
           <article class="planet-card reveal">
             <div class="planet-image">
               <img src="images/mercury.webp" alt="Illustration of Mercury" loading="lazy">
@@ -54,7 +58,9 @@
               <p class="planet-fact">A year on Mercury lasts only 88 Earth days.</p>
             </div>
           </article>
+          </div>
 
+          <div class="planet-motion-wrapper">
           <article class="planet-card reveal delay-1">
             <div class="planet-image">
               <img src="images/venuss.jpg" alt="Illustration of Venus" loading="lazy">
@@ -66,7 +72,9 @@
               <p class="planet-fact">Venus rotates in the opposite direction to most planets.</p>
             </div>
           </article>
+          </div>
 
+          <div class="planet-motion-wrapper">
           <article class="planet-card reveal delay-2">
             <div class="planet-image">
               <img src="images/earth.jpg" alt="Illustration of Earth" loading="lazy">
@@ -78,7 +86,9 @@
               <p class="planet-fact">About 71% of Earth's surface is covered by water.</p>
             </div>
           </article>
+          </div>
 
+          <div class="planet-motion-wrapper">
           <article class="planet-card reveal delay-3">
             <div class="planet-image">
               <img src="images/mars.jpg" alt="Illustration of Mars" loading="lazy">
@@ -90,7 +100,9 @@
               <p class="planet-fact">Olympus Mons is the largest volcano in the Solar System.</p>
             </div>
           </article>
+          </div>
 
+          <div class="planet-motion-wrapper">
           <article class="planet-card reveal">
             <div class="planet-image">
               <img src="images/jupiter.jpg" alt="Illustration of Jupiter" loading="lazy">
@@ -102,7 +114,9 @@
               <p class="planet-fact">Its Great Red Spot is a storm wider than Earth.</p>
             </div>
           </article>
+          </div>
 
+          <div class="planet-motion-wrapper">
           <article class="planet-card reveal delay-1">
             <div class="planet-image">
               <img src="images/saturn.jpg" alt="Illustration of Saturn and its rings" loading="lazy">
@@ -114,7 +128,9 @@
               <p class="planet-fact">Saturn is less dense than water.</p>
             </div>
           </article>
+          </div>
 
+          <div class="planet-motion-wrapper">
           <article class="planet-card reveal delay-2">
             <div class="planet-image">
               <img src="images/uranus.webp" alt="Illustration of Uranus" loading="lazy">
@@ -126,7 +142,9 @@
               <p class="planet-fact">Uranus rotates on its side at a 98-degree tilt.</p>
             </div>
           </article>
+          </div>
 
+          <div class="planet-motion-wrapper">
           <article class="planet-card reveal delay-3">
             <div class="planet-image">
               <img src="images/neptune.jpg" alt="Illustration of Neptune" loading="lazy">
@@ -138,6 +156,7 @@
               <p class="planet-fact">Winds on Neptune can exceed 2,000 km/h.</p>
             </div>
           </article>
+          </div>
         </div>
       </div>
     </section>
