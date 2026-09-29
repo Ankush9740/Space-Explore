@@ -116,8 +116,6 @@ function setupPlanetGallery(reduceMotion) {
   if (!stage) return;
 
   const wrappers = [...stage.querySelectorAll(".planet-motion-wrapper")];
-  const cards = wrappers.map((wrapper) => wrapper.querySelector(".planet-card"));
-  const images = cards.map((card) => card.querySelector("img"));
   const mobileLayout = window.matchMedia("(max-width: 700px)");
   const rotations = [-5, 3, -1, -3, 2.5, 4, -2, 3];
   const yOffsets = [-62, 34, -12, 66, -38, 44, -54, 58];
@@ -127,11 +125,8 @@ function setupPlanetGallery(reduceMotion) {
   let inView = false;
   let pointerActive = false;
   let dragging = false;
-  let galleryHovered = false;
-  let hoverSpeed = 1;
   let frame = 0;
   let lastFrame = 0;
-  let lastPaint = 0;
   let enteredAt = 0;
   let position = 0;
   let velocity = 0;
@@ -144,17 +139,10 @@ function setupPlanetGallery(reduceMotion) {
   let loopWidth = spacing * wrappers.length;
   let initialized = false;
   let focusedIndex = -1;
+  const wrapperZIndexes = new Array(wrappers.length).fill(null);
 
   wrappers.forEach((wrapper, index) => {
     wrapper.style.setProperty("--mobile-rotation", reduceMotion ? "0deg" : `${(rotations[index] * 0.32).toFixed(2)}deg`);
-  });
-
-  stage.addEventListener("pointerenter", () => {
-    if (!compact) galleryHovered = true;
-  });
-
-  stage.addEventListener("pointerleave", () => {
-    galleryHovered = false;
   });
 
   const clearDesktopStyles = () => {
@@ -162,10 +150,9 @@ function setupPlanetGallery(reduceMotion) {
       wrapper.style.removeProperty("transform");
       wrapper.style.removeProperty("opacity");
       wrapper.style.removeProperty("z-index");
-      images[index]?.style.removeProperty("transform");
+      wrapperZIndexes[index] = null;
       wrapper.classList.remove("is-focused");
     });
-    galleryHovered = false;
     focusedIndex = -1;
   };
 
@@ -191,19 +178,10 @@ function setupPlanetGallery(reduceMotion) {
       return;
     }
 
-    const hasMomentum = Math.abs(velocity) > 0.018;
-    if (!dragging && !hasMomentum && lastPaint && now - lastPaint < 32) {
-      frame = requestAnimationFrame(render);
-      return;
-    }
-
     const delta = lastFrame ? Math.min((now - lastFrame) / 16.67, 2) : 1;
     lastFrame = now;
-    lastPaint = now;
     const elapsed = now - enteredAt;
     const driftStrength = clamp((elapsed - 900) / 1000, 0, 1);
-    const hoverTarget = galleryHovered ? 0.28 : 1;
-    hoverSpeed += (hoverTarget - hoverSpeed) * Math.min(0.1 * delta, 1);
 
     if (!dragging) {
       if (Math.abs(velocity) > 0.018) {
@@ -211,7 +189,7 @@ function setupPlanetGallery(reduceMotion) {
         velocity *= Math.pow(0.925, delta);
       } else {
         velocity = 0;
-        position -= 0.22 * hoverSpeed * driftStrength * delta;
+        position -= 0.22 * driftStrength * delta;
       }
     }
 
@@ -231,12 +209,14 @@ function setupPlanetGallery(reduceMotion) {
       const tilt = clamp((stageWidth / 2 - cardCenter) / (stageWidth / 2) * 5, -5, 5);
       const scale = emphasis[index] * (0.9 + focus * 0.1);
       const opacity = entry * (0.58 + focus * 0.42);
-      const imageShift = clamp((cardCenter - stageWidth / 2) / stageWidth * -11, -6, 6);
 
       wrapper.style.transform = `translate3d(${(wrappedX + entryShift).toFixed(2)}px, calc(-50% + ${yOffsets[index]}px), 0) rotateY(${tilt.toFixed(2)}deg) rotateZ(${(baseRotation + entryRotation).toFixed(2)}deg) scale(${scale.toFixed(3)})`;
       wrapper.style.opacity = opacity.toFixed(3);
-      wrapper.style.zIndex = `${1 + Math.round(focus * 9)}`;
-      images[index].style.transform = `translate3d(${imageShift.toFixed(2)}px, 0, 0) scale(1.025)`;
+      const zIndex = 1 + Math.round(focus * 9);
+      if (wrapperZIndexes[index] !== zIndex) {
+        wrapper.style.zIndex = `${zIndex}`;
+        wrapperZIndexes[index] = zIndex;
+      }
 
       if (distance < closestDistance) {
         closestDistance = distance;
@@ -256,7 +236,6 @@ function setupPlanetGallery(reduceMotion) {
   const start = () => {
     if (!frame && inView && !compact) {
       lastFrame = 0;
-      lastPaint = 0;
       frame = requestAnimationFrame(render);
     }
   };
