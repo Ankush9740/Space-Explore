@@ -58,20 +58,31 @@ function setupHomeHeroMotion(reduceMotion) {
   const hero = document.querySelector(".page-home .hero");
   if (!hero || reduceMotion) return;
 
-  const canUsePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  const pointerParallax = window.matchMedia("(hover: hover) and (pointer: fine) and (min-width: 900px)");
   const current = { x: 0, y: 0, scroll: 0 };
   const target = { x: 0, y: 0, scroll: 0 };
+  const bounds = { left: 0, top: 0, width: 1, height: 1 };
   let frame = 0;
 
+  const measureHero = () => {
+    const rect = hero.getBoundingClientRect();
+    bounds.left = rect.left + window.scrollX;
+    bounds.top = rect.top + window.scrollY;
+    bounds.width = Math.max(rect.width, 1);
+    bounds.height = Math.max(rect.height, 1);
+  };
+
   const draw = () => {
-    current.x += (target.x - current.x) * 0.075;
-    current.y += (target.y - current.y) * 0.075;
+    current.x += (target.x - current.x) * 0.065;
+    current.y += (target.y - current.y) * 0.065;
     current.scroll += (target.scroll - current.scroll) * 0.1;
 
     hero.style.setProperty("--hero-media-x", `${(-current.x * 3).toFixed(2)}px`);
     hero.style.setProperty("--hero-media-y", `${(-current.y * 2 - current.scroll * 10).toFixed(2)}px`);
-    hero.style.setProperty("--hero-star-x", `${(current.x * 7).toFixed(2)}px`);
-    hero.style.setProperty("--hero-star-y", `${(current.y * 5 - current.scroll * 16).toFixed(2)}px`);
+    hero.style.setProperty("--hero-star-x", `${(current.x * 5.5).toFixed(2)}px`);
+    hero.style.setProperty("--hero-star-y", `${(current.y * 4 - current.scroll * 15).toFixed(2)}px`);
+    hero.style.setProperty("--hero-astronaut-x", `${(current.x * 9).toFixed(2)}px`);
+    hero.style.setProperty("--hero-astronaut-y", `${(current.y * 7 - current.scroll * 12).toFixed(2)}px`);
     hero.style.setProperty("--hero-content-y", `${(-current.scroll * 32).toFixed(2)}px`);
     hero.style.setProperty("--hero-content-opacity", (1 - current.scroll * 0.26).toFixed(3));
 
@@ -87,27 +98,36 @@ function setupHomeHeroMotion(reduceMotion) {
     if (!frame) frame = requestAnimationFrame(draw);
   };
 
-  if (canUsePointer) {
-    hero.addEventListener("pointermove", (event) => {
-      const bounds = hero.getBoundingClientRect();
-      target.x = ((event.clientX - bounds.left) / bounds.width - 0.5) * 2;
-      target.y = ((event.clientY - bounds.top) / bounds.height - 0.5) * 2;
-      requestDraw();
-    }, { passive: true });
+  hero.addEventListener("pointermove", (event) => {
+    if (!pointerParallax.matches) return;
+    const x = (event.clientX + window.scrollX - bounds.left) / bounds.width;
+    const y = (event.clientY + window.scrollY - bounds.top) / bounds.height;
+    target.x = Math.min(Math.max((x - 0.5) * 2, -1), 1);
+    target.y = Math.min(Math.max((y - 0.5) * 2, -1), 1);
+    requestDraw();
+  }, { passive: true });
 
-    hero.addEventListener("pointerleave", () => {
-      target.x = 0;
-      target.y = 0;
-      requestDraw();
-    });
-  }
+  hero.addEventListener("pointerleave", () => {
+    target.x = 0;
+    target.y = 0;
+    requestDraw();
+  });
+
+  pointerParallax.addEventListener?.("change", () => {
+    if (pointerParallax.matches) return;
+    target.x = 0;
+    target.y = 0;
+    requestDraw();
+  });
 
   const updateScroll = () => {
-    target.scroll = Math.min(window.scrollY / Math.max(hero.offsetHeight, 1), 1);
+    target.scroll = Math.min(window.scrollY / bounds.height, 1);
     requestDraw();
   };
 
+  window.addEventListener("resize", measureHero, { passive: true });
   window.addEventListener("scroll", updateScroll, { passive: true });
+  measureHero();
   updateScroll();
 }
 

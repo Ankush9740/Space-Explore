@@ -195,31 +195,14 @@ textarea:focus-visible {
 .logo {
   display: inline-flex;
   align-items: center;
-  gap: 11px;
-  font-size: 0.91rem;
-  font-weight: 800;
-  letter-spacing: 0.15em;
+  flex-shrink: 0;
+  line-height: 0;
 }
 
-.logo-mark {
-  position: relative;
-  width: 34px;
-  height: 34px;
-  border: 1px solid rgba(124, 158, 173, 0.62);
-  border-radius: 50%;
-  box-shadow: inset -6px -5px 12px rgba(124, 158, 173, 0.16);
-}
-
-.logo-mark::before {
-  position: absolute;
-  width: 42px;
-  height: 12px;
-  top: 10px;
-  left: -5px;
-  border: 1px solid var(--bronze);
-  border-radius: 50%;
-  content: "";
-  transform: rotate(-20deg);
+.logo-image {
+  display: block;
+  width: auto;
+  height: 52px;
 }
 
 .nav-links {
@@ -363,6 +346,10 @@ textarea:focus-visible {
   --hero-media-y: 0px;
   --hero-star-x: 0px;
   --hero-star-y: 0px;
+  --hero-astronaut-base-x: 0%;
+  --hero-astronaut-x: 0px;
+  --hero-astronaut-y: 0px;
+  --scroll-cue-x: 0%;
   --hero-content-y: 0px;
   --hero-content-opacity: 1;
   position: relative;
@@ -377,12 +364,9 @@ textarea:focus-visible {
 .hero-media {
   position: absolute;
   z-index: 0;
-  inset: -2.5%;
-  background:
-    linear-gradient(90deg, rgba(7, 8, 9, 0.99) 0%, rgba(7, 8, 9, 0.88) 36%, rgba(7, 8, 9, 0.18) 72%),
-    linear-gradient(0deg, var(--bg) 0%, transparent 28%),
-    url("../images/hero-space.png") center / cover no-repeat;
-  animation: hero-cinematic-drift 30s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+  inset: -5%;
+  background: url("../images/hero-galaxy.png") center / cover no-repeat;
+  animation: hero-cinematic-drift 26s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
   pointer-events: none;
   will-change: transform;
 }
@@ -391,38 +375,100 @@ textarea:focus-visible {
   position: absolute;
   z-index: 1;
   inset: 0;
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0 1px, transparent 1.4px);
-  background-size: 120px 120px;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.72) 0 1px, transparent 1.4px),
+    radial-gradient(circle, rgba(177, 205, 216, 0.5) 0 1px, transparent 1.5px),
+    radial-gradient(circle, rgba(241, 239, 233, 0.3) 0 0.7px, transparent 1.2px);
+  background-position: 0 0, 52px 38px, 96px 74px;
+  background-size: 148px 148px, 226px 226px, 310px 310px;
   content: "";
-  opacity: 0.18;
-  animation: star-drift 24s linear infinite;
+  opacity: 0.16;
+  animation:
+    star-drift 28s linear infinite,
+    hero-stars-breathe 9s ease-in-out infinite alternate;
   pointer-events: none;
   transform: translate3d(var(--hero-star-x), var(--hero-star-y), 0);
   will-change: transform, background-position;
+}
+
+.hero::after {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(7, 8, 9, 0.96) 0%, rgba(7, 8, 9, 0.83) 32%, rgba(7, 8, 9, 0.34) 56%, rgba(7, 8, 9, 0.05) 78%),
+    linear-gradient(0deg, rgba(7, 8, 9, 0.92) 0%, transparent 30%),
+    radial-gradient(circle at 73% 42%, rgba(124, 158, 173, 0.13), transparent 30%);
+  content: "";
+  pointer-events: none;
 }
 
 @keyframes star-drift {
   to { background-position: -60px 40px; }
 }
 
+@keyframes hero-stars-breathe {
+  0%, 100% { opacity: 0.12; }
+  52% { opacity: 0.2; }
+}
+
 @keyframes hero-cinematic-drift {
   0% {
-    transform: translate3d(var(--hero-media-x), var(--hero-media-y), 0) scale(1.005);
+    transform: translate3d(var(--hero-media-x), var(--hero-media-y), 0) scale(1.03);
   }
   100% {
-    transform: translate3d(calc(var(--hero-media-x) + 9px), calc(var(--hero-media-y) - 5px), 0) scale(1.03);
+    transform: translate3d(calc(var(--hero-media-x) + 7px), calc(var(--hero-media-y) - 5px), 0) scale(1.07);
+  }
+}
+
+.hero-astronaut {
+  position: absolute;
+  z-index: 3;
+  right: max(-150px, -8vw);
+  bottom: -3%;
+  width: clamp(650px, 61vw, 920px);
+  pointer-events: none;
+  transform-origin: 54% 58%;
+  animation: astronaut-float 10s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.hero-astronaut::before {
+  position: absolute;
+  z-index: -1;
+  inset: 12% 7% 8% 16%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(124, 158, 173, 0.1), transparent 67%);
+  content: "";
+}
+
+.hero-astronaut img {
+  width: 100%;
+  height: auto;
+  filter:
+    drop-shadow(0 28px 34px rgba(0, 0, 0, 0.44))
+    drop-shadow(0 0 20px rgba(124, 158, 173, 0.1));
+  user-select: none;
+}
+
+@keyframes astronaut-float {
+  0% {
+    transform: translate3d(calc(var(--hero-astronaut-base-x) + var(--hero-astronaut-x)), var(--hero-astronaut-y), 0) rotate(-0.35deg);
+  }
+  100% {
+    transform: translate3d(calc(var(--hero-astronaut-base-x) + var(--hero-astronaut-x) + 4px), calc(var(--hero-astronaut-y) - 10px), 0) rotate(0.35deg);
   }
 }
 
 .hero > .container {
   position: relative;
-  z-index: 2;
+  z-index: 4;
 }
 
 .hero-content {
   position: relative;
-  z-index: 2;
-  max-width: 720px;
+  z-index: 4;
+  max-width: 600px;
   padding: 100px 0 130px;
   opacity: var(--hero-content-opacity);
   transform: translate3d(0, var(--hero-content-y), 0);
@@ -454,8 +500,8 @@ textarea:focus-visible {
 }
 
 .hero h1 {
-  max-width: 700px;
-  font-size: clamp(3.4rem, 8vw, 7rem);
+  max-width: 600px;
+  font-size: clamp(3.4rem, 7vw, 6.4rem);
   font-weight: 760;
   letter-spacing: -0.065em;
   line-height: 0.93;
@@ -468,7 +514,7 @@ textarea:focus-visible {
 }
 
 .hero-copy {
-  max-width: 580px;
+  max-width: 540px;
   margin: 28px 0 34px;
   color: #b9bab8;
   font-size: clamp(1rem, 1.6vw, 1.16rem);
@@ -482,9 +528,9 @@ textarea:focus-visible {
 
 .scroll-cue {
   position: absolute;
-  z-index: 3;
+  z-index: 5;
   bottom: 34px;
-  left: 50%;
+  left: max(20px, calc((100% - var(--max)) / 2));
   display: flex;
   align-items: center;
   gap: 10px;
@@ -492,7 +538,7 @@ textarea:focus-visible {
   font-size: 0.73rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  transform: translateX(-50%);
+  transform: translateX(var(--scroll-cue-x));
 }
 
 .scroll-cue::before {
@@ -528,6 +574,10 @@ textarea:focus-visible {
   animation: hero-item-enter 0.62s 0.48s ease-out both;
 }
 
+.page-home .hero-astronaut img {
+  animation: hero-astronaut-enter 1.05s 0.18s ease-out both;
+}
+
 .page-home .scroll-cue {
   animation: hero-cue-enter 0.55s 0.68s ease-out both;
 }
@@ -559,9 +609,14 @@ textarea:focus-visible {
   }
 }
 
+@keyframes hero-astronaut-enter {
+  from { opacity: 0; transform: scale(0.99); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 @keyframes hero-cue-enter {
-  from { opacity: 0; transform: translate(-50%, 12px); }
-  to { opacity: 1; transform: translate(-50%, 0); }
+  from { opacity: 0; transform: translate(var(--scroll-cue-x), 12px); }
+  to { opacity: 1; transform: translate(var(--scroll-cue-x), 0); }
 }
 
 /* ---------- Cards and home sections ---------- */
@@ -1736,8 +1791,13 @@ textarea:focus-visible {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background:
-    linear-gradient(90deg, rgba(7, 8, 9, 0.92), rgba(7, 8, 9, 0.44)),
-    url("../images/deepspace.jpg") center / cover;
+    linear-gradient(90deg, rgba(6, 8, 12, 0.9), rgba(6, 8, 12, 0.58)),
+    radial-gradient(circle at 50% 32%, rgba(88, 114, 145, 0.18), transparent 42%),
+    radial-gradient(circle, rgba(230, 238, 246, 0.42) 0 0.7px, transparent 1.25px),
+    radial-gradient(circle, rgba(132, 183, 218, 0.28) 0 0.8px, transparent 1.4px),
+    #07090d;
+  background-position: 0 0, 0 0, 0 0, 76px 44px, 0 0;
+  background-size: auto, auto, 210px 210px, 330px 330px, auto;
   text-align: center;
 }
 
@@ -1848,7 +1908,511 @@ textarea:focus-visible {
 .delay-2 { transition-delay: 0.16s; }
 .delay-3 { transition-delay: 0.24s; }
 
+/* ---------- Cinematic site atmosphere ---------- */
+.section {
+  position: relative;
+  isolation: isolate;
+}
+
+.section > .container {
+  position: relative;
+  z-index: 1;
+}
+
+.section-soft {
+  background:
+    radial-gradient(circle at 82% 18%, rgba(91, 111, 148, 0.16), transparent 38%),
+    linear-gradient(180deg, rgba(9, 12, 18, 0.82), rgba(15, 20, 31, 0.94), rgba(8, 10, 15, 0.88));
+}
+
+/* The Home hero remains the signature moment; these layers carry it into the page. */
+.page-home #about {
+  overflow: hidden;
+  padding-top: 78px;
+  background:
+    radial-gradient(ellipse at 17% 44%, rgba(46, 105, 157, 0.34) 0%, rgba(29, 66, 110, 0.17) 30%, transparent 60%),
+    radial-gradient(ellipse at 45% 8%, rgba(79, 61, 133, 0.23) 0%, transparent 45%),
+    linear-gradient(180deg, #060914 0%, #091525 34%, #080e19 68%, #08090d 100%);
+}
+
+.page-home #about::before,
+.page-home .section-soft::before,
+.page-home main > .section:last-of-type::before,
+.page-explore .planet-gallery-section::before,
+.page-explore .section-soft::before,
+.page-missions main > .section::before,
+.page-gallery main > .section::before,
+.page-contact main > .section::before {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(228, 237, 243, 0.64) 0 0.7px, transparent 1.25px),
+    radial-gradient(circle, rgba(126, 173, 207, 0.52) 0 0.8px, transparent 1.35px);
+  background-position: 0 0, 83px 51px;
+  background-size: 215px 215px, 345px 345px;
+  content: "";
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.page-home #about::after {
+  position: absolute;
+  z-index: 0;
+  top: 10%;
+  bottom: 4%;
+  left: -12%;
+  width: 72%;
+  background:
+    radial-gradient(ellipse at 48% 50%, rgba(62, 125, 181, 0.3), rgba(39, 78, 133, 0.14) 36%, transparent 69%),
+    radial-gradient(ellipse at 66% 64%, rgba(103, 75, 151, 0.18), transparent 50%);
+  content: "";
+  pointer-events: none;
+}
+
+.page-home .section-soft {
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 86% 26%, rgba(91, 70, 153, 0.29) 0%, transparent 42%),
+    radial-gradient(ellipse at 12% 78%, rgba(45, 97, 147, 0.23) 0%, transparent 39%),
+    linear-gradient(180deg, #090c13 0%, #0d1421 50%, #090b12 100%);
+}
+
+.page-home .section-soft::after {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 82% 54%, rgba(72, 90, 145, 0.2), transparent 37%),
+    linear-gradient(90deg, transparent 46%, rgba(27, 35, 58, 0.24));
+  content: "";
+  pointer-events: none;
+}
+
+.page-home main > .section:last-of-type {
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 76% 38%, rgba(49, 103, 153, 0.25) 0%, transparent 41%),
+    radial-gradient(ellipse at 18% 72%, rgba(88, 64, 132, 0.16) 0%, transparent 34%),
+    linear-gradient(180deg, #080d16 0%, #090d15 55%, #060708 100%);
+}
+
+.page-home main > .section:last-of-type::after {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 28%, rgba(109, 137, 169, 0.11), transparent 52%);
+  content: "";
+  pointer-events: none;
+}
+
+.story-visual {
+  border-color: rgba(143, 177, 201, 0.3);
+  background:
+    linear-gradient(140deg, rgba(12, 29, 49, 0.12), rgba(7, 9, 16, 0.26)),
+    url("../images/deepspace.jpg") center / cover;
+  box-shadow:
+    0 30px 74px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(88, 137, 174, 0.07),
+    0 0 100px rgba(48, 105, 158, 0.24),
+    44px 32px 120px rgba(83, 60, 132, 0.12);
+}
+
+.feature-card,
+.destination-card,
+.planet-card,
+.mission-card {
+  border-color: rgba(139, 163, 181, 0.22);
+  background:
+    linear-gradient(145deg, rgba(29, 36, 47, 0.98), rgba(12, 16, 23, 0.99)),
+    var(--surface);
+  box-shadow:
+    0 20px 48px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.025);
+  transition: transform 400ms ease, border-color 400ms ease, box-shadow 400ms ease;
+}
+
+.feature-card.reveal.visible:hover,
+.destination-card.reveal.visible:hover,
+.mission-card.reveal.visible:hover {
+  border-color: rgba(124, 158, 173, 0.42);
+  box-shadow:
+    0 30px 66px rgba(0, 0, 0, 0.54),
+    0 0 38px rgba(72, 121, 165, 0.14);
+  transform: translateY(-8px);
+}
+
+.feature-card:hover img,
+.mission-card:hover img,
+.destination-card:hover .destination-image img {
+  transform: scale(1.055);
+}
+
+.page-home .feature-image img,
+.page-home .destination-image img,
+.page-missions .mission-image img {
+  filter: brightness(1.08) contrast(1.06) saturate(1.05);
+}
+
+.page-home .feature-card,
+.page-home .destination-card {
+  border-color: rgba(139, 166, 187, 0.27);
+  box-shadow:
+    0 24px 58px rgba(0, 0, 0, 0.48),
+    0 0 30px rgba(56, 100, 145, 0.08);
+}
+
+/* Quieter cinematic heroes, each with its own subject and lighting. */
+.page-hero {
+  min-height: 460px;
+  isolation: isolate;
+  background: #080a0e;
+}
+
+.page-hero::before,
+.page-hero::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+}
+
+.page-hero::before {
+  z-index: 0;
+  inset: -3%;
+  background-position: 72% center;
+  background-size: cover;
+  opacity: 0.42;
+  animation: inner-hero-breathe 28s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.page-hero::after {
+  z-index: 1;
+  background:
+    linear-gradient(90deg, rgba(6, 8, 12, 0.98) 0%, rgba(6, 8, 12, 0.86) 38%, rgba(6, 8, 12, 0.42) 68%, rgba(6, 8, 12, 0.2) 100%),
+    linear-gradient(0deg, #080a0e 0%, transparent 38%),
+    radial-gradient(circle, rgba(232, 238, 240, 0.46) 0 0.7px, transparent 1.2px),
+    radial-gradient(circle, rgba(124, 158, 173, 0.3) 0 0.8px, transparent 1.4px);
+  background-position: 0 0, 0 0, 0 0, 68px 42px;
+  background-size: auto, auto, 190px 190px, 310px 310px;
+}
+
+.page-hero-content {
+  z-index: 3;
+}
+
+.hero-decoration {
+  z-index: 2;
+}
+
+.page-explore .page-hero::before {
+  background-image: url("../images/earthhome.avif");
+  background-position: 76% 47%;
+  opacity: 0.46;
+}
+
+.page-explore .page-hero::after {
+  background:
+    linear-gradient(90deg, rgba(5, 8, 12, 0.98) 0%, rgba(5, 8, 12, 0.88) 42%, rgba(5, 8, 12, 0.3) 72%, rgba(5, 8, 12, 0.12) 100%),
+    linear-gradient(0deg, #080b10 0%, transparent 42%),
+    radial-gradient(circle at 80% 45%, rgba(89, 134, 170, 0.18), transparent 30%),
+    radial-gradient(circle, rgba(218, 228, 234, 0.44) 0 0.7px, transparent 1.2px);
+  background-size: auto, auto, auto, 205px 205px;
+}
+
+.page-missions .page-hero::before {
+  background-image: url("../images/laucnh.jpg");
+  background-position: 72% 52%;
+  opacity: 0.38;
+}
+
+.page-missions .page-hero::after {
+  background:
+    linear-gradient(90deg, rgba(7, 8, 11, 0.98) 0%, rgba(7, 8, 11, 0.9) 43%, rgba(7, 8, 11, 0.38) 76%, rgba(7, 8, 11, 0.2) 100%),
+    linear-gradient(0deg, #090a0d 0%, transparent 40%),
+    linear-gradient(rgba(255, 255, 255, 0.014) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.014) 1px, transparent 1px),
+    radial-gradient(circle at 82% 34%, rgba(126, 151, 178, 0.13), transparent 28%);
+  background-size: auto, auto, 84px 84px, 84px 84px, auto;
+}
+
+.page-gallery .page-hero::before {
+  background:
+    radial-gradient(ellipse at 78% 42%, rgba(83, 105, 145, 0.24), transparent 32%),
+    radial-gradient(ellipse at 89% 24%, rgba(95, 73, 137, 0.14), transparent 25%),
+    linear-gradient(135deg, #070a11 0%, #0a101b 58%, #05070b 100%);
+  opacity: 1;
+  animation: none;
+}
+
+.page-gallery .page-hero::after {
+  background:
+    linear-gradient(90deg, rgba(5, 7, 11, 0.98) 0%, rgba(5, 7, 11, 0.86) 42%, rgba(5, 7, 11, 0.32) 76%, rgba(5, 7, 11, 0.16) 100%),
+    linear-gradient(0deg, #07090d 0%, transparent 44%),
+    radial-gradient(circle at 77% 40%, rgba(86, 75, 142, 0.14), transparent 30%),
+    radial-gradient(circle, rgba(228, 232, 240, 0.42) 0 0.7px, transparent 1.2px);
+  background-size: auto, auto, auto, 220px 220px;
+}
+
+.page-contact .page-hero::before {
+  background:
+    radial-gradient(circle at 77% 42%, rgba(76, 111, 154, 0.2), transparent 24%),
+    radial-gradient(circle at 86% 28%, rgba(92, 68, 126, 0.11), transparent 22%),
+    linear-gradient(135deg, #080a0f, #05070a);
+  opacity: 1;
+  animation: none;
+}
+
+.page-contact .page-hero::after {
+  background:
+    linear-gradient(90deg, rgba(6, 8, 12, 0.98) 0%, rgba(6, 8, 12, 0.84) 46%, rgba(6, 8, 12, 0.26) 80%),
+    linear-gradient(0deg, #07090d 0%, transparent 42%),
+    radial-gradient(circle, rgba(213, 226, 232, 0.42) 0 0.7px, transparent 1.2px),
+    radial-gradient(circle, rgba(112, 146, 170, 0.28) 0 0.8px, transparent 1.4px);
+  background-position: 0 0, 0 0, 0 0, 80px 48px;
+  background-size: auto, auto, 230px 230px, 360px 360px;
+}
+
+@keyframes inner-hero-breathe {
+  from { transform: translate3d(-3px, 1px, 0) scale(1.025); }
+  to { transform: translate3d(4px, -3px, 0) scale(1.055); }
+}
+
+/* Explore: worlds suspended in a quiet planetary field. */
+.page-explore main {
+  background:
+    radial-gradient(ellipse at 10% 30%, rgba(43, 93, 142, 0.25), transparent 34%),
+    radial-gradient(ellipse at 90% 70%, rgba(91, 68, 139, 0.18), transparent 38%),
+    linear-gradient(180deg, #070c15, #080c14 58%, #06080c);
+}
+
+.page-explore .planet-gallery-section {
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 48%, rgba(50, 101, 151, 0.28) 0%, rgba(34, 66, 105, 0.14) 38%, transparent 67%),
+    radial-gradient(ellipse at 78% 25%, rgba(86, 68, 137, 0.17), transparent 35%),
+    linear-gradient(180deg, #070c15, #08111d 52%, #080b12);
+}
+
+.page-explore .planet-gallery-section::after {
+  position: absolute;
+  z-index: 0;
+  top: 12%;
+  right: -18%;
+  width: 76%;
+  height: 70%;
+  border: 1px solid rgba(118, 159, 191, 0.16);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 70px rgba(102, 140, 176, 0.025),
+    0 0 0 150px rgba(90, 119, 157, 0.018);
+  content: "";
+  pointer-events: none;
+}
+
+.page-explore .planet-stage,
+.page-explore .planet-gallery-intro {
+  position: relative;
+  z-index: 1;
+}
+
+.page-explore .planet-card {
+  border-color: rgba(142, 174, 198, 0.29);
+  background: linear-gradient(150deg, rgba(23, 33, 47, 0.99), rgba(8, 12, 20, 0.99));
+  box-shadow:
+    0 25px 58px rgba(0, 0, 0, 0.5),
+    0 0 44px rgba(65, 117, 164, 0.15);
+}
+
+.page-explore .planet-image {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(93, 145, 184, 0.3), rgba(24, 49, 75, 0.14) 38%, transparent 67%),
+    #030407;
+}
+
+.planet-gallery-section .planet-card.reveal.visible:hover {
+  border-color: rgba(124, 158, 173, 0.42);
+  transform: translate3d(0, -6px, 0) scale(1.025);
+}
+
+.planet-stage.is-scroll .planet-card.reveal.visible:hover {
+  transform: translateY(-4px) scale(1.015);
+}
+
+.page-explore .system-note {
+  border-color: rgba(132, 171, 199, 0.3);
+  background:
+    radial-gradient(circle at 88% 50%, rgba(72, 126, 171, 0.28), transparent 32%),
+    radial-gradient(circle at 8% 20%, rgba(91, 70, 137, 0.14), transparent 31%),
+    linear-gradient(120deg, rgba(25, 37, 53, 0.98), rgba(10, 15, 24, 0.99));
+  box-shadow:
+    0 26px 62px rgba(0, 0, 0, 0.46),
+    0 0 42px rgba(55, 101, 146, 0.12);
+}
+
+.page-explore .section-soft {
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 82% 48%, rgba(48, 103, 151, 0.25), transparent 41%),
+    radial-gradient(ellipse at 17% 82%, rgba(82, 62, 126, 0.15), transparent 34%),
+    linear-gradient(180deg, #090e18, #080b12 72%, #06080b);
+}
+
+/* Missions: documentary surfaces with a restrained coordinate field. */
+.page-missions main > .section {
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 82% 16%, rgba(55, 108, 156, 0.26), transparent 36%),
+    radial-gradient(ellipse at 15% 58%, rgba(87, 67, 132, 0.17), transparent 38%),
+    linear-gradient(rgba(146, 177, 199, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(146, 177, 199, 0.025) 1px, transparent 1px),
+    linear-gradient(180deg, #080d16, #0a101a 48%, #07090e);
+  background-size: auto, auto, 112px 112px, 112px 112px, auto;
+}
+
+.page-missions main > .section::after {
+  position: absolute;
+  z-index: 0;
+  top: 7%;
+  right: -19%;
+  width: 79%;
+  height: 44%;
+  border: 1px solid rgba(123, 158, 187, 0.16);
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
+  transform: rotate(-16deg);
+}
+
+.page-missions .timeline::before {
+  background: linear-gradient(transparent, rgba(124, 158, 173, 0.58) 12%, rgba(183, 154, 114, 0.34) 72%, transparent);
+}
+
+.page-missions .mission-card {
+  border-color: rgba(145, 170, 190, 0.27);
+  background: linear-gradient(145deg, rgba(27, 35, 46, 0.99), rgba(11, 15, 22, 0.99));
+  box-shadow:
+    0 24px 56px rgba(0, 0, 0, 0.48),
+    0 0 34px rgba(56, 102, 146, 0.11);
+}
+
+.page-missions .mission-image {
+  position: relative;
+}
+
+.page-missions .mission-image::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(8, 9, 12, 0.28), transparent 44%);
+  content: "";
+  pointer-events: none;
+}
+
+.page-missions .achievement {
+  background: linear-gradient(90deg, rgba(183, 154, 114, 0.13), rgba(87, 116, 151, 0.055));
+}
+
+/* Gallery: quiet framing lets the astronomical imagery lead. */
+.page-gallery main > .section {
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 76% 13%, rgba(71, 91, 151, 0.23), transparent 33%),
+    radial-gradient(ellipse at 17% 57%, rgba(49, 98, 143, 0.19), transparent 35%),
+    radial-gradient(ellipse at 78% 82%, rgba(89, 65, 132, 0.15), transparent 32%),
+    linear-gradient(180deg, #060a12, #080d16 48%, #06080c);
+}
+
+.page-gallery .gallery-item {
+  border-color: rgba(181, 201, 216, 0.24);
+  box-shadow:
+    0 20px 46px rgba(0, 0, 0, 0.48),
+    0 0 30px rgba(56, 97, 142, 0.09);
+  transition: transform 400ms ease, border-color 400ms ease, box-shadow 400ms ease;
+}
+
+.page-gallery .gallery-item.reveal.visible:hover {
+  border-color: rgba(137, 165, 184, 0.4);
+  box-shadow:
+    0 30px 62px rgba(0, 0, 0, 0.58),
+    0 0 40px rgba(76, 118, 164, 0.16);
+  transform: translateY(-6px);
+}
+
+.page-gallery .gallery-item img {
+  filter: brightness(1.05) contrast(1.06) saturate(1.04);
+}
+
+.page-gallery .gallery-item:hover img {
+  filter: brightness(0.96) contrast(1.08) saturate(1.06);
+  transform: scale(1.045);
+}
+
+.page-gallery .gallery-overlay {
+  background: linear-gradient(transparent 38%, rgba(5, 7, 10, 0.94));
+}
+
+/* Contact: a restrained open channel rather than a terminal interface. */
+.page-contact main > .section:not(.section-soft) {
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 88% 24%, rgba(49, 105, 153, 0.28), transparent 38%),
+    radial-gradient(ellipse at 11% 72%, rgba(88, 65, 134, 0.2), transparent 38%),
+    linear-gradient(180deg, #070c15, #09111c 52%, #07090e);
+}
+
+.page-contact .contact-form {
+  border-color: rgba(143, 174, 197, 0.3);
+  background:
+    linear-gradient(150deg, rgba(27, 37, 50, 0.98), rgba(10, 15, 23, 0.99));
+  box-shadow:
+    0 28px 68px rgba(0, 0, 0, 0.52),
+    0 0 52px rgba(58, 110, 158, 0.16);
+}
+
+.page-contact .form-group input,
+.page-contact .form-group textarea {
+  background: rgba(4, 7, 11, 0.76);
+}
+
+.page-contact .signal-visual {
+  background:
+    radial-gradient(circle at 18% 50%, rgba(95, 151, 190, 0.24), transparent 33%),
+    linear-gradient(90deg, rgba(55, 102, 150, 0.16), transparent 82%);
+}
+
+.page-contact .section-soft {
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 76% 30%, rgba(78, 62, 128, 0.2), transparent 38%),
+    radial-gradient(ellipse at 19% 70%, rgba(47, 94, 139, 0.16), transparent 33%),
+    linear-gradient(180deg, #080d15, #070a10 72%, #050607);
+}
+
+.page-contact .curiosity-banner {
+  border-color: rgba(139, 158, 172, 0.16);
+  background:
+    radial-gradient(ellipse at center, rgba(4, 9, 20, 0.86) 0%, rgba(4, 9, 20, 0.62) 38%, rgba(4, 9, 20, 0.18) 78%),
+    linear-gradient(180deg, rgba(3, 7, 15, 0.2), rgba(3, 7, 15, 0.46)),
+    url("../images/hero-galaxy.png") center 51% / cover no-repeat;
+  box-shadow: 0 24px 58px rgba(0, 0, 0, 0.34);
+}
+
+/* The atmosphere recedes into one quiet footer treatment. */
+.site-footer {
+  background:
+    linear-gradient(180deg, rgba(8, 10, 13, 0.98), #040506 38%),
+    #040506;
+}
+
 /* ---------- Responsive ---------- */
+@media (max-width: 1100px) {
+  .hero-content { max-width: 520px; }
+  .hero h1 { max-width: 520px; font-size: clamp(3.4rem, 7.4vw, 5.35rem); }
+  .hero-copy { max-width: 490px; }
+  .hero-astronaut { right: -165px; width: min(69vw, 710px); }
+}
+
 @media (max-width: 1000px) {
   .card-grid { grid-template-columns: repeat(2, 1fr); }
   .card-grid .feature-card:last-child { grid-column: span 2; }
@@ -1879,9 +2443,32 @@ textarea:focus-visible {
   .nav-links.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
   .nav-link { padding: 14px 0; }
   .nav-link::after { bottom: 9px; transform-origin: left; }
-  .hero { min-height: 720px; }
-  .hero-media { background-position: 62% center; }
-  .hero-content { padding: 90px 0 150px; }
+  .page-hero::before { opacity: 0.3; }
+  .page-hero-content { max-width: 640px; }
+  .hero {
+    --hero-astronaut-base-x: -50%;
+    --scroll-cue-x: -50%;
+    min-height: 900px;
+    align-items: start;
+  }
+  .hero-media { background-position: center; }
+  .hero::after {
+    background:
+      linear-gradient(180deg, rgba(7, 8, 9, 0.02) 0%, rgba(7, 8, 9, 0.14) 27%, rgba(7, 8, 9, 0.88) 45%, rgba(7, 8, 9, 0.98) 72%),
+      linear-gradient(90deg, rgba(7, 8, 9, 0.3), rgba(7, 8, 9, 0.04) 48%, rgba(7, 8, 9, 0.18)),
+      radial-gradient(circle at 50% 20%, rgba(124, 158, 173, 0.11), transparent 35%);
+  }
+  .hero-content { max-width: 620px; padding: 350px 0 120px; }
+  .hero h1 { max-width: 620px; font-size: clamp(3.5rem, 9vw, 4.7rem); }
+  .hero-copy { max-width: 520px; }
+  .hero-astronaut {
+    top: -12px;
+    right: auto;
+    bottom: auto;
+    left: 50%;
+    width: min(100vw, 620px);
+  }
+  .scroll-cue { left: 50%; }
   .story-grid, .contact-grid { grid-template-columns: 1fr; }
   .story-visual { min-height: 380px; }
   .system-note { grid-template-columns: 1fr; }
@@ -1894,14 +2481,64 @@ textarea:focus-visible {
   .footer-brand { grid-column: span 2; }
 }
 
-@media (max-width: 580px) {
-  .container { width: min(calc(100% - 28px), var(--max)); }
-  .hero { min-height: 680px; }
-  .hero-media { background-position: 68% center; }
-  .hero h1 { font-size: clamp(3rem, 17vw, 4.7rem); }
+@media (max-width: 700px) {
+  .hero {
+    --hero-astronaut-base-x: -50%;
+    --scroll-cue-x: -50%;
+    min-height: clamp(820px, 112svh, 900px);
+    align-items: start;
+  }
+
+  .hero-media { background-position: center; }
+
+  .hero::after {
+    background:
+      linear-gradient(180deg, rgba(7, 8, 9, 0.02) 0%, rgba(7, 8, 9, 0.14) 27%, rgba(7, 8, 9, 0.88) 45%, rgba(7, 8, 9, 0.98) 72%),
+      linear-gradient(90deg, rgba(7, 8, 9, 0.3), rgba(7, 8, 9, 0.04) 48%, rgba(7, 8, 9, 0.18)),
+      radial-gradient(circle at 50% 20%, rgba(124, 158, 173, 0.11), transparent 35%);
+  }
+
+  .hero-astronaut {
+    top: -12px;
+    right: auto;
+    bottom: auto;
+    left: 50%;
+    width: min(164vw, 620px);
+  }
+
+  .hero-content {
+    max-width: 100%;
+    padding: 340px 0 120px;
+  }
+
+  .hero h1 {
+    max-width: 100%;
+    font-size: clamp(3.15rem, 14.8vw, 4.2rem);
+  }
+
+  .hero-copy { max-width: 520px; margin: 22px 0 28px; }
   .hero-actions { align-items: stretch; flex-direction: column; }
   .hero-actions .button { width: 100%; }
+
+  .scroll-cue {
+    bottom: 18px;
+    left: 50%;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 580px) {
+  .container { width: min(calc(100% - 28px), var(--max)); }
+  .logo-image { height: 44px; }
+  .hero { min-height: clamp(820px, 112svh, 900px); }
+  .hero h1 { font-size: clamp(3.05rem, 14.5vw, 4rem); }
   .page-hero { min-height: 370px; }
+  .page-hero-content { padding: 72px 0; }
+  .page-hero h1 { font-size: clamp(2.55rem, 12vw, 3.2rem); }
+  .page-hero p { font-size: 1rem; }
+  .page-home #about::before,
+  .page-home main > .section:last-of-type::before,
+  .page-explore .planet-gallery-section::before { opacity: 0.22; }
   .card-grid, .destination-grid { grid-template-columns: 1fr; }
   .card-grid .feature-card:last-child { grid-column: auto; }
   .destination-card:last-child { grid-column: auto; }
@@ -1926,6 +2563,18 @@ textarea:focus-visible {
   .hero-media,
   .hero::before,
   .hero-content { transform: none !important; }
+  .hero-media,
+  .hero::before,
+  .hero-astronaut,
+  .hero-astronaut img { animation: none !important; }
+  .hero-astronaut {
+    transform: translate3d(var(--hero-astronaut-base-x), 0, 0) !important;
+  }
+  .hero-astronaut img { transform: none !important; }
+  .page-hero::before {
+    animation: none !important;
+    transform: none !important;
+  }
   .page-home .site-header,
   .page-home .hero-kicker,
   .page-home .hero h1,
@@ -1937,5 +2586,5 @@ textarea:focus-visible {
     animation: none !important;
     transform: none;
   }
-  .page-home .scroll-cue { transform: translateX(-50%); }
+  .page-home .scroll-cue { transform: translateX(var(--scroll-cue-x)); }
 }
