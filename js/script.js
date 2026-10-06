@@ -135,11 +135,13 @@ function setupPlanetGallery(reduceMotion) {
   const stage = document.querySelector(".planet-stage");
   if (!stage) return;
 
+  const section = stage.closest(".planet-gallery-section");
   const wrappers = [...stage.querySelectorAll(".planet-motion-wrapper")];
+  const dragSurface = document.createElement("div");
   const mobileLayout = window.matchMedia("(max-width: 700px)");
-  const rotations = [-5, 3, -1, -3, 2.5, 4, -2, 3];
-  const yOffsets = [-62, 34, -12, 66, -38, 44, -54, 58];
-  const emphasis = [0.98, 0.99, 1.045, 0.99, 1.035, 1, 0.98, 0.99];
+  const rotations = [-5, 3.5, -1.5, 3, -3.5, 4.5, -2.5, 3.5];
+  const yOffsets = [-34, 22, -10, 28, -26, 18, -30, 24];
+  const scaleBias = [0.99, 1, 1.01, 0.99, 1.01, 1, 0.99, 1];
 
   let compact = false;
   let inView = false;
@@ -156,10 +158,23 @@ function setupPlanetGallery(reduceMotion) {
   let stageWidth = 0;
   let cardWidth = 0;
   let spacing = 360;
-  let loopWidth = spacing * wrappers.length;
+  let loopWidth = 0;
+  let centerPosition = 0;
+  let autoSpeed = -0.36;
   let initialized = false;
   let focusedIndex = -1;
+  let snapTarget = null;
+  let snapStrength = 0.14;
+  let keyboardTargetIndex = null;
+  let initialPosition = 0;
+  let enteredOnce = false;
+  let mobileScrollFrame = 0;
+  let hoveredIndex = -1;
   const wrapperZIndexes = new Array(wrappers.length).fill(null);
+
+  dragSurface.className = "planet-drag-surface";
+  dragSurface.setAttribute("aria-hidden", "true");
+  stage.append(dragSurface);
 
   wrappers.forEach((wrapper, index) => {
     wrapper.style.setProperty("--mobile-rotation", reduceMotion ? "0deg" : `${(rotations[index] * 0.32).toFixed(2)}deg`);
@@ -176,21 +191,53 @@ function setupPlanetGallery(reduceMotion) {
     focusedIndex = -1;
   };
 
+  const setFocusedCard = (index) => {
+    if (index === focusedIndex) return;
+
+    wrappers[focusedIndex]?.classList.remove("is-focused");
+    wrappers[focusedIndex]?.querySelector(".planet-card")?.removeAttribute("aria-current");
+    wrappers[index]?.classList.add("is-focused");
+    wrappers[index]?.querySelector(".planet-card")?.setAttribute("aria-current", "true");
+    focusedIndex = index;
+  };
+
+  const setHoveredCard = (index) => {
+    if (index === hoveredIndex) return;
+    wrappers[hoveredIndex]?.classList.remove("is-hovered");
+    wrappers[index]?.classList.add("is-hovered");
+    hoveredIndex = index;
+  };
+
   const measure = () => {
     stageWidth = stage.clientWidth;
     cardWidth = wrappers[0]?.offsetWidth || 300;
-    spacing = Math.max(cardWidth + 48, Math.min(400, stageWidth * 0.28));
+    spacing = Math.max(cardWidth + 52, Math.min(410, stageWidth * 0.29));
     loopWidth = spacing * wrappers.length;
+    centerPosition = stageWidth / 2 - cardWidth / 2;
+    autoSpeed = mobileLayout.matches ? -0.2 : stageWidth < 1000 ? -0.28 : -0.36;
 
     if (!initialized) {
-      position = stageWidth / 2 - cardWidth / 2 - spacing * 2;
+      position = centerPosition - spacing * 2;
+      initialPosition = position;
+      velocity = autoSpeed;
       initialized = true;
+    } else if (focusedIndex >= 0) {
+      position = centerPosition - focusedIndex * spacing;
+      initialPosition = position;
+      snapTarget = null;
+      keyboardTargetIndex = null;
+      velocity = autoSpeed;
     }
   };
 
-  const wrap = (value, length) => ((value % length) + length) % length;
   const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+  const wrap = (value, length) => ((value % length) + length) % length;
   const easeOut = (value) => 1 - Math.pow(1 - value, 3);
+
+  const getCardX = (index, atPosition = position) => {
+    const offsetFromCenter = index * spacing + atPosition - centerPosition;
+    return centerPosition + wrap(offsetFromCenter + loopWidth / 2, loopWidth) - loopWidth / 2;
+  };
 
   const render = (now) => {
     if (!inView || compact) {
@@ -201,38 +248,57 @@ function setupPlanetGallery(reduceMotion) {
     const delta = lastFrame ? Math.min((now - lastFrame) / 16.67, 2) : 1;
     lastFrame = now;
     const elapsed = now - enteredAt;
-    const driftStrength = clamp((elapsed - 900) / 1000, 0, 1);
-
     if (!dragging) {
-      if (Math.abs(velocity) > 0.018) {
-        position += velocity * delta;
-        velocity *= Math.pow(0.925, delta);
-      } else {
+      if (snapTarget !== null) {
+        const distanceToTarget = snapTarget - position;
+        position += distanceToTarget * Math.min(snapStrength * delta, 1);
         velocity = 0;
-        position -= 0.22 * driftStrength * delta;
+
+        if (Math.abs(distanceToTarget) < 0.35) {
+          position = snapTarget;
+          snapTarget = null;
+          snapStrength = 0.14;
+          keyboardTargetIndex = null;
+          velocity = autoSpeed;
+        }
+      } else {
+        position += velocity * delta;
+        velocity += (autoSpeed - velocity) * Math.min(0.035 * delta, 1);
+
+        // Keep the virtual coordinate numerically small without changing any
+        // card's wrapped screen position.
+        if (Math.abs(position - initialPosition) > loopWidth * 4) {
+          position = initialPosition + wrap(position - initialPosition + loopWidth / 2, loopWidth) - loopWidth / 2;
+        }
       }
     }
 
     let nextFocused = 0;
     let closestDistance = Infinity;
+    const stageCenter = stageWidth / 2;
+    const motionLean = clamp(velocity * 0.13, -2.1, 2.1);
+    const compactDepth = mobileLayout.matches ? 0.58 : 1;
 
     wrappers.forEach((wrapper, index) => {
-      const wrappedX = wrap(index * spacing + position + spacing, loopWidth) - spacing;
-      const cardCenter = wrappedX + cardWidth / 2;
-      const distance = Math.abs(cardCenter - stageWidth / 2);
-      const focus = clamp(1 - distance / (stageWidth * 0.58), 0, 1);
-      const entryDelay = index * 70;
-      const entry = easeOut(clamp((elapsed - entryDelay) / 620, 0, 1));
-      const entryShift = (index % 2 === 0 ? -1 : 1) * (1 - entry) * 95;
-      const baseRotation = rotations[index] * (1 - focus * 0.88);
-      const entryRotation = (index % 2 === 0 ? -4 : 4) * (1 - entry);
-      const tilt = clamp((stageWidth / 2 - cardCenter) / (stageWidth / 2) * 5, -5, 5);
-      const scale = emphasis[index] * (0.9 + focus * 0.1);
-      const opacity = entry * (0.58 + focus * 0.42);
+      const cardX = getCardX(index);
+      const cardCenter = cardX + cardWidth / 2;
+      const distance = Math.abs(cardCenter - stageCenter);
+      const focus = clamp(1 - distance / (spacing * 1.55), 0, 1);
+      const entryDelay = index * 75;
+      const entry = easeOut(clamp((elapsed - entryDelay) / 760, 0, 1));
+      const entryLift = (1 - entry) * 46;
+      const baseRotation = rotations[index] * (1 - focus * 0.94) * compactDepth;
+      const entryRotation = (index % 2 === 0 ? -3 : 3) * (1 - entry);
+      const maxTilt = mobileLayout.matches ? 3.2 : 5.5;
+      const perspectiveTilt = clamp((stageCenter - cardCenter) / stageCenter * maxTilt, -maxTilt, maxTilt);
+      const depth = (-92 + focus * 102) * compactDepth - (1 - entry) * 34;
+      const scale = (0.86 + focus * 0.17) * (1 + (scaleBias[index] - 1) * (1 - focus * 0.7));
+      const opacity = entry * (0.68 + focus * 0.32);
 
-      wrapper.style.transform = `translate3d(${(wrappedX + entryShift).toFixed(2)}px, calc(-50% + ${yOffsets[index]}px), 0) rotateY(${tilt.toFixed(2)}deg) rotateZ(${(baseRotation + entryRotation).toFixed(2)}deg) scale(${scale.toFixed(3)})`;
+      const verticalOffset = yOffsets[index] * compactDepth + entryLift;
+      wrapper.style.transform = `translate3d(${cardX.toFixed(2)}px, calc(-50% + ${verticalOffset.toFixed(2)}px), ${depth.toFixed(2)}px) rotateY(${perspectiveTilt.toFixed(2)}deg) rotateZ(${(baseRotation + entryRotation + motionLean).toFixed(2)}deg) scale(${scale.toFixed(3)})`;
       wrapper.style.opacity = opacity.toFixed(3);
-      const zIndex = 1 + Math.round(focus * 9);
+      const zIndex = 1 + Math.round(focus * 12);
       if (wrapperZIndexes[index] !== zIndex) {
         wrapper.style.zIndex = `${zIndex}`;
         wrapperZIndexes[index] = zIndex;
@@ -244,10 +310,11 @@ function setupPlanetGallery(reduceMotion) {
       }
     });
 
-    if (nextFocused !== focusedIndex) {
-      wrappers[focusedIndex]?.classList.remove("is-focused");
-      wrappers[nextFocused]?.classList.add("is-focused");
-      focusedIndex = nextFocused;
+    setFocusedCard(nextFocused);
+
+    if (section) {
+      const orbitPhase = (position - initialPosition) / loopWidth * Math.PI * 2;
+      section.style.setProperty("--planet-parallax", `${(Math.sin(orbitPhase) * 72).toFixed(2)}px`);
     }
 
     frame = requestAnimationFrame(render);
@@ -261,9 +328,12 @@ function setupPlanetGallery(reduceMotion) {
   };
 
   const setLayout = () => {
-    const nextCompact = reduceMotion || mobileLayout.matches;
+    const nextCompact = reduceMotion;
     if (nextCompact === compact && initialized) {
-      if (!compact) measure();
+      if (!compact) {
+        measure();
+        start();
+      }
       return;
     }
 
@@ -274,29 +344,33 @@ function setupPlanetGallery(reduceMotion) {
       cancelAnimationFrame(frame);
       frame = 0;
       clearDesktopStyles();
+      section?.style.removeProperty("--planet-parallax");
       cardWidth = wrappers[0]?.offsetWidth || 300;
-      if (reduceMotion || inView) stage.classList.add("is-entered");
+      if (reduceMotion || enteredOnce) stage.classList.add("is-entered");
     } else {
-      stage.classList.remove("is-entered");
       measure();
-      if (inView) {
-        enteredAt = performance.now();
-        stage.classList.add("is-entered");
-        start();
-      }
+      stage.classList.toggle("is-entered", enteredOnce);
+      if (inView) start();
     }
   };
 
   stage.addEventListener("pointerdown", (event) => {
     if (compact || event.button !== 0) return;
+    setHoveredCard(-1);
     pointerActive = true;
+    dragging = false;
     pointerStartX = event.clientX;
     lastPointerX = event.clientX;
     lastPointerTime = performance.now();
-    event.preventDefault();
+    snapTarget = null;
+    keyboardTargetIndex = null;
+    snapStrength = 0.14;
+    velocity = 0;
+    stage.setPointerCapture(event.pointerId);
+    start();
   });
 
-  stage.addEventListener("pointermove", (event) => {
+  const handlePointerMove = (event) => {
     if (!pointerActive || compact) return;
     const now = performance.now();
     const movement = event.clientX - lastPointerX;
@@ -306,52 +380,128 @@ function setupPlanetGallery(reduceMotion) {
       dragging = true;
       velocity = 0;
       stage.classList.add("is-dragging");
-      stage.setPointerCapture(event.pointerId);
     }
 
     if (dragging) {
       position += movement;
-      velocity = movement / elapsed * 16.67;
+      velocity = clamp(movement / elapsed * 16.67, -18, 18);
+      start();
     }
 
     lastPointerX = event.clientX;
     lastPointerTime = now;
+  };
+
+  dragSurface.addEventListener("pointermove", (event) => {
+    if (compact || pointerActive) return;
+
+    let nextHovered = -1;
+    let nearestDistance = Infinity;
+
+    wrappers.forEach((wrapper, index) => {
+      const rect = wrapper.getBoundingClientRect();
+      const insideCard = event.clientX >= rect.left && event.clientX <= rect.right
+        && event.clientY >= rect.top && event.clientY <= rect.bottom;
+      const distance = Math.abs(event.clientX - (rect.left + rect.width / 2));
+
+      if (insideCard && distance < nearestDistance) {
+        nearestDistance = distance;
+        nextHovered = index;
+      }
+    });
+
+    setHoveredCard(nextHovered);
   });
+
+  dragSurface.addEventListener("pointerleave", () => setHoveredCard(-1));
 
   const release = (event) => {
     if (!pointerActive) return;
     pointerActive = false;
+    const wasDragging = dragging;
     dragging = false;
     stage.classList.remove("is-dragging");
+    setHoveredCard(-1);
     if (stage.hasPointerCapture(event.pointerId)) stage.releasePointerCapture(event.pointerId);
+
+    if (!wasDragging) velocity = autoSpeed;
+    start();
   };
 
-  stage.addEventListener("pointerup", release);
-  stage.addEventListener("pointercancel", release);
+  window.addEventListener("pointermove", handlePointerMove);
+  window.addEventListener("pointerup", release);
+  window.addEventListener("pointercancel", release);
+  stage.addEventListener("dragstart", (event) => event.preventDefault());
 
   stage.addEventListener("keydown", (event) => {
     if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
     event.preventDefault();
-    const direction = event.key === "ArrowLeft" ? 1 : -1;
 
     if (compact) {
       const step = (wrappers[0]?.offsetWidth || cardWidth || 300) + 20;
-      stage.scrollLeft += event.key === "ArrowRight" ? step : -step;
+      stage.scrollBy({
+        left: event.key === "ArrowRight" ? step : -step,
+        behavior: reduceMotion ? "auto" : "smooth"
+      });
     } else {
-      velocity = direction * 8;
+      const direction = event.key === "ArrowRight" ? 1 : -1;
+      const pendingIndex = keyboardTargetIndex ?? focusedIndex;
+      const nextIndex = wrap(pendingIndex + direction, wrappers.length);
+      const basePosition = snapTarget ?? position;
+      let travel = centerPosition - getCardX(nextIndex, basePosition);
+
+      if (direction > 0 && travel > 0) travel -= loopWidth;
+      if (direction < 0 && travel < 0) travel += loopWidth;
+
+      velocity = 0;
+      snapTarget = basePosition + travel;
+      keyboardTargetIndex = nextIndex;
+      snapStrength = 0.22;
+      cancelAnimationFrame(frame);
+      frame = 0;
+      start();
     }
   });
+
+  const updateMobileFocus = () => {
+    mobileScrollFrame = 0;
+    if (!compact) return;
+
+    const stageRect = stage.getBoundingClientRect();
+    const stageCenter = stageRect.left + stageRect.width / 2;
+    let nextFocused = 0;
+    let closestDistance = Infinity;
+
+    wrappers.forEach((wrapper, index) => {
+      const rect = wrapper.getBoundingClientRect();
+      const distance = Math.abs(rect.left + rect.width / 2 - stageCenter);
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        nextFocused = index;
+      }
+    });
+
+    setFocusedCard(nextFocused);
+  };
+
+  stage.addEventListener("scroll", () => {
+    if (!mobileScrollFrame) mobileScrollFrame = requestAnimationFrame(updateMobileFocus);
+  }, { passive: true });
 
   const sectionObserver = new IntersectionObserver((entries) => {
     const entry = entries[0];
     inView = entry.isIntersecting;
 
-    if (inView && !stage.classList.contains("is-entered")) {
+    if (inView && !enteredOnce) {
+      enteredOnce = true;
       enteredAt = performance.now();
       stage.classList.add("is-entered");
     }
 
-    if (inView) start();
+    if (inView) {
+      if (compact) updateMobileFocus();
+      else start();
+    }
     else {
       cancelAnimationFrame(frame);
       frame = 0;
