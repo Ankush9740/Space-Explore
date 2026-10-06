@@ -49,10 +49,37 @@ document.addEventListener("DOMContentLoaded", () => {
   revealItems.forEach((item) => observer.observe(item));
 
   setupHomeHeroMotion(reducedMotion.matches);
+  setupJourneyVideo(reducedMotion.matches);
   setupPlanetGallery(reducedMotion.matches);
   setupGallery();
   setupContactForm();
 });
+
+function setupJourneyVideo(reduceMotion) {
+  const video = document.querySelector(".journey-cinema-video");
+  if (!video) return;
+
+  video.muted = true;
+
+  if (reduceMotion) {
+    video.pause();
+    return;
+  }
+
+  const playbackObserver = new IntersectionObserver((entries) => {
+    const isVisible = entries[0].isIntersecting;
+
+    if (isVisible) {
+      video.play().catch(() => {
+        // The panel background keeps the section intentional if autoplay is blocked.
+      });
+    } else {
+      video.pause();
+    }
+  }, { threshold: 0.25 });
+
+  playbackObserver.observe(video);
+}
 
 function setupHomeHeroMotion(reduceMotion) {
   const hero = document.querySelector(".page-home .hero");

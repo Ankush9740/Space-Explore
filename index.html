@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="A modern student-built website about planets, missions and the wonder of space exploration.">
   <title>Space Explorer | Explore Beyond Earth</title>
-  <link rel="stylesheet" href="css/style.css?v=cinematic-system-5">
-  <script src="js/script.js?v=cinematic-hero-1" defer></script>
+  <link rel="stylesheet" href="css/style.css?v=journey-cinema-1">
+  <script src="js/script.js?v=journey-cinema-1" defer></script>
 </head>
 <body class="page-home">
   <header class="site-header">
@@ -110,49 +110,23 @@
       </div>
     </section>
 
-    <section class="section">
+    <section class="section" id="journey-beyond-earth">
       <div class="container">
         <div class="section-heading reveal">
           <p class="eyebrow">Choose your destination</p>
           <h2 class="section-title">Journey Beyond Earth</h2>
           <p class="section-copy">From our closest neighbour to the outer giants, every world has a story waiting to be explored.</p>
         </div>
-        <div class="destination-grid">
-          <article class="destination-card reveal">
-            <div class="destination-image">
-              <img src="images/mooon.jpeg" alt="Lunar lander on the Moon" loading="lazy">
-            </div>
-            <div class="card-body">
-              <span class="card-label">Closest neighbour</span>
-              <h3 class="card-title">The Moon</h3>
-              <p class="card-copy">Follow the first footsteps beyond Earth.</p>
-              <a class="destination-link" href="missions.html">Explore →</a>
-            </div>
-          </article>
-
-          <article class="destination-card reveal delay-1">
-            <div class="destination-image">
-              <img src="images/maars.avif" alt="The red planet Mars" loading="lazy">
-            </div>
-            <div class="card-body">
-              <span class="card-label">Red frontier</span>
-              <h3 class="card-title">Mars</h3>
-              <p class="card-copy">Discover ancient rivers and robotic trails.</p>
-              <a class="destination-link" href="explore.html">Explore →</a>
-            </div>
-          </article>
-
-          <article class="destination-card reveal delay-2">
-            <div class="destination-image">
-              <img src="images/satuuurn.jpg" alt="Saturn and its bright ring system" loading="lazy">
-            </div>
-            <div class="card-body">
-              <span class="card-label">Ringed giant</span>
-              <h3 class="card-title">Saturn</h3>
-              <p class="card-copy">Travel to a world wrapped in icy rings.</p>
-              <a class="destination-link" href="explore.html">Explore →</a>
-            </div>
-          </article>
+        <div class="journey-cinema reveal">
+          <video class="journey-cinema-video" autoplay muted loop playsinline preload="metadata" aria-hidden="true" tabindex="-1">
+            <source src="video/earth-moon.mp4" type="video/mp4">
+          </video>
+          <div class="journey-cinema-content">
+            <p class="journey-cinema-eyebrow">Our home in the cosmos</p>
+            <h3 class="journey-cinema-title">Where every journey begins.</h3>
+            <p class="journey-cinema-copy">Before we explore distant worlds, we look back at the one that made exploration possible.</p>
+            <a class="journey-cinema-link" href="explore.html">Explore the Solar System →</a>
+          </div>
         </div>
       </div>
     </section>
