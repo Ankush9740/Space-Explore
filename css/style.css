@@ -2539,9 +2539,8 @@ textarea:focus-visible {
 .page-explore .system-note {
   border-color: rgba(132, 171, 199, 0.3);
   background:
-    radial-gradient(circle at 88% 50%, rgba(72, 126, 171, 0.28), transparent 32%),
-    radial-gradient(circle at 8% 20%, rgba(91, 70, 137, 0.14), transparent 31%),
-    linear-gradient(120deg, rgba(25, 37, 53, 0.98), rgba(10, 15, 24, 0.99));
+    linear-gradient(90deg, rgba(5, 9, 17, 0.82), rgba(5, 9, 17, 0.56)),
+    url("../images/long-card.jpg") center / cover no-repeat;
   box-shadow:
     0 26px 62px rgba(0, 0, 0, 0.46),
     0 0 42px rgba(55, 101, 146, 0.12);
@@ -2700,9 +2699,9 @@ textarea:focus-visible {
 .page-contact .curiosity-banner {
   border-color: rgba(139, 158, 172, 0.16);
   background:
-    radial-gradient(ellipse at center, rgba(4, 9, 20, 0.86) 0%, rgba(4, 9, 20, 0.62) 38%, rgba(4, 9, 20, 0.18) 78%),
-    linear-gradient(180deg, rgba(3, 7, 15, 0.2), rgba(3, 7, 15, 0.46)),
-    url("../images/hero-galaxy.png") center 51% / cover no-repeat;
+    radial-gradient(ellipse at center, rgba(4, 9, 20, 0.72) 0%, rgba(4, 9, 20, 0.5) 42%, rgba(4, 9, 20, 0.3) 78%),
+    linear-gradient(180deg, rgba(3, 7, 15, 0.18), rgba(3, 7, 15, 0.42)),
+    url("../images/long-card.jpg") center / cover no-repeat;
   box-shadow: 0 24px 58px rgba(0, 0, 0, 0.34);
 }
 
