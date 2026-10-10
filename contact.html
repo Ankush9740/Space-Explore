@@ -4,10 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Send a message and join a community inspired by space exploration and scientific discovery.">
-  <title>Join the Exploration | Space Explorer</title>
-  <link rel="stylesheet" href="css/style.css?v=cinematic-intro-1">
-  <script src="js/script.js?v=cinematic-intro-1" defer></script>
+  <meta name="description" content="A cinematic closing reflection on discovery, mystery and humanity's continuing journey into space.">
+  <title>The Journey Continues | Space Explorer</title>
+  <link rel="stylesheet" href="css/style.css?v=journey-documentary-1">
+  <script src="js/script.js?v=journey-documentary-1" defer></script>
 </head>
 <body class="page-contact">
   <div class="site-intro" data-site-intro aria-hidden="true" hidden>
@@ -33,81 +33,182 @@
         <li><a class="nav-link" href="explore.html">Explore</a></li>
         <li><a class="nav-link" href="missions.html">Missions</a></li>
         <li><a class="nav-link" href="gallery.html">Gallery</a></li>
-        <li><a class="nav-link active" href="contact.html" aria-current="page">Contact</a></li>
+        <li><a class="nav-link active" href="contact.html" aria-current="page">Journey</a></li>
       </ul>
     </nav>
   </header>
 
-  <main>
-    <section class="page-hero">
-      <div class="page-hero-photo" aria-hidden="true">
-        <img src="images/contact-background.jpg" alt="" width="720" height="360">
-      </div>
-      <div class="container page-hero-content">
-        <p class="eyebrow">Join the exploration</p>
-        <h1>Your next question could <span class="accent">start a journey.</span></h1>
-        <p>Share what fascinates you about space, suggest a topic, or simply say hello to another curious mind.</p>
-      </div>
-      <div class="hero-decoration contact-transmission" aria-hidden="true">
-        <span class="probe-object">
-          <span class="probe-panel probe-panel-left"></span>
-          <span class="probe-panel probe-panel-right"></span>
-          <span class="probe-dish"></span>
-        </span>
-        <span class="probe-wave wave-one"></span>
-        <span class="probe-wave wave-two"></span>
-        <span class="probe-wave wave-three"></span>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="container contact-grid">
-        <div class="contact-intro reveal">
-          <p class="eyebrow">Open channel</p>
-          <h2 class="section-title">Send a Signal Beyond Earth.</h2>
-          <p>Share a thought, question, or idea inspired by the universe—we are always ready to receive your transmission.</p>
-          <div class="signal-visual" aria-hidden="true">
-            <span class="signal-waves"></span>
-            <span class="signal-status">Channel open</span>
-          </div>
+  <main class="journey-page" data-journey>
+    <section class="journey-opening journey-pinned" data-journey-opening aria-labelledby="journey-title">
+      <div class="journey-sticky">
+        <div class="journey-space" aria-hidden="true">
+          <div class="journey-stars journey-stars-far"></div>
+          <div class="journey-stars journey-stars-near"></div>
+          <img class="journey-horizon journey-opening-horizon" src="images/hero-space.png" alt="" width="1916" height="821" draggable="false">
         </div>
 
-        <form class="contact-form reveal delay-1" id="contact-form" novalidate>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="name">Your name</label>
-              <input id="name" name="name" type="text" placeholder="Enter your name" autocomplete="name" required>
-            </div>
-            <div class="form-group">
-              <label for="email">Email address</label>
-              <input id="email" name="email" type="email" placeholder="you@example.com" autocomplete="email" required>
-            </div>
+        <div class="journey-opening-content container">
+          <p class="journey-eyebrow">Beyond the horizon</p>
+          <div class="journey-headline-stack">
+            <h1 class="journey-opening-title journey-title-base" id="journey-title">THE UNIVERSE IS STILL WAITING.</h1>
+            <div class="journey-opening-title journey-title-reveal" aria-hidden="true">THE UNIVERSE IS STILL WAITING.</div>
           </div>
-
-          <div class="form-group">
-            <label for="subject">Subject</label>
-            <input id="subject" name="subject" type="text" placeholder="What would you like to discuss?" required>
-          </div>
-
-          <div class="form-group">
-            <label for="message">Message</label>
-            <textarea id="message" name="message" placeholder="Write your message here..." required></textarea>
-          </div>
-
-          <button class="button" type="submit">
-            Send Message <span class="button-arrow" aria-hidden="true">→</span>
-          </button>
-          <p class="form-status" role="status" aria-live="polite"></p>
-        </form>
+          <p class="journey-opening-copy">Every answer carries us toward a larger question—and every horizon asks us to look beyond it.</p>
+          <div class="journey-scroll-cue" aria-hidden="true"><span></span>Scroll to continue</div>
+        </div>
       </div>
     </section>
 
-    <section class="section section-soft">
-      <div class="container">
-        <div class="curiosity-banner reveal">
-          <p class="eyebrow">A note for every explorer</p>
-          <h2>Stay Curious. Keep Exploring.</h2>
-          <p>The universe rewards those who keep asking why, looking closer, and imagining what could come next.</p>
+    <section class="cosmos-story journey-pinned" data-cosmos-story aria-labelledby="cosmos-title">
+      <div class="journey-sticky cosmos-sticky">
+        <div class="cosmos-visual" aria-hidden="true">
+          <img class="cosmos-galaxy" src="images/hero-galaxy.png" alt="" width="1672" height="941" draggable="false">
+          <img class="cosmos-earth" src="images/earth.jpg" alt="" width="2048" height="2048" draggable="false">
+          <div class="journey-stars journey-stars-far"></div>
+          <div class="journey-stars journey-stars-near"></div>
+        </div>
+
+        <div class="cosmos-content container">
+          <p class="journey-eyebrow">Our place in the cosmos</p>
+          <h2 class="cosmos-title" id="cosmos-title" aria-label="We are a small part of something infinite.">
+            <span class="cosmos-word">WE</span>
+            <span class="cosmos-word">ARE</span>
+            <span class="cosmos-word">A</span>
+            <span class="cosmos-word">SMALL</span>
+            <span class="cosmos-word">PART</span>
+            <span class="cosmos-word">OF</span>
+            <span class="cosmos-word">SOMETHING</span>
+            <span class="cosmos-word">INFINITE.</span>
+          </h2>
+          <p class="cosmos-copy">From our home on Earth to galaxies billions of light-years away, the universe challenges everything we think we know.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="questions-story journey-pinned" data-questions-story aria-labelledby="questions-title">
+      <div class="journey-sticky questions-sticky">
+        <div class="questions-heading container">
+          <p class="journey-eyebrow">The questions that remain</p>
+          <h2 id="questions-title">Curiosity carries us forward.</h2>
+          <p>Three questions continue to shape where we look—and why we keep exploring.</p>
+        </div>
+
+        <div class="questions-viewport">
+          <div class="questions-track">
+            <article class="question-panel" data-question-panel>
+              <img src="images/earthhome.avif" alt="Earth suspended against the darkness of space" width="1024" height="1024">
+              <div class="question-copy">
+                <span>01 / Life</span>
+                <h3>ARE WE ALONE?</h3>
+                <p>Across ancient Martian terrain and oceans hidden beneath icy moons, scientists search for the chemistry of life. Even one confirmed biosignature would reshape our understanding of the universe—and our place within it.</p>
+              </div>
+            </article>
+
+            <article class="question-panel" data-question-panel>
+              <img src="images/hero-galaxy.png" alt="A luminous galaxy field stretching into deep space" width="1672" height="941">
+              <div class="question-copy">
+                <span>02 / Distance</span>
+                <h3>WHAT LIES BEYOND?</h3>
+                <p>The observable universe is only the light that has had time to reach us. Beyond that horizon may lie more galaxies, unfamiliar physics, and mysteries that our newest observatories are only beginning to approach.</p>
+              </div>
+            </article>
+
+            <article class="question-panel" data-question-panel>
+              <img src="images/voyger.jpg" alt="A deep-space probe travelling beyond the outer planets" width="2048" height="1693">
+              <div class="question-copy">
+                <span>03 / Future</span>
+                <h3>WHERE DO WE GO NEXT?</h3>
+                <p>Robotic scouts will travel first, mapping risks and revealing new destinations. Human explorers will follow when science, courage, and technology make the next impossible journey possible.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="unknown-story journey-pinned" data-unknown-story aria-labelledby="unknown-title">
+      <div class="journey-sticky unknown-sticky">
+        <div class="unknown-space" aria-hidden="true">
+          <div class="unknown-stars unknown-stars-far"></div>
+          <div class="unknown-stars unknown-stars-near"></div>
+          <span class="asteroid asteroid-1"><i></i></span>
+          <span class="asteroid asteroid-2"><i></i></span>
+          <span class="asteroid asteroid-3"><i></i></span>
+          <span class="asteroid asteroid-4"><i></i></span>
+          <span class="asteroid asteroid-5"><i></i></span>
+          <span class="asteroid asteroid-6"><i></i></span>
+          <span class="asteroid asteroid-7"><i></i></span>
+        </div>
+
+        <div class="unknown-intro container">
+          <p class="journey-eyebrow">The infinite journey</p>
+          <h2 id="unknown-title" aria-label="Every discovery takes us further.">
+            <span class="unknown-word">EVERY</span>
+            <span class="unknown-word">DISCOVERY</span>
+            <span class="unknown-word">TAKES</span>
+            <span class="unknown-word">US</span>
+            <span class="unknown-word">FURTHER.</span>
+          </h2>
+          <p class="unknown-copy">Beyond the familiar worlds lies a universe still waiting to be understood.</p>
+        </div>
+
+        <div class="unknown-revelations container">
+          <p class="unknown-statement" aria-label="We look beyond.">
+            <span class="statement-word">WE</span>
+            <span class="statement-word">LOOK</span>
+            <span class="statement-word">BEYOND.</span>
+          </p>
+          <p class="unknown-statement" aria-label="We question everything.">
+            <span class="statement-word">WE</span>
+            <span class="statement-word">QUESTION</span>
+            <span class="statement-word">EVERYTHING.</span>
+          </p>
+          <p class="unknown-statement" aria-label="We keep exploring.">
+            <span class="statement-word">WE</span>
+            <span class="statement-word">KEEP</span>
+            <span class="statement-word">EXPLORING.</span>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="journey-closing journey-pinned" data-journey-closing aria-labelledby="closing-title">
+      <div class="journey-sticky closing-sticky">
+        <div class="journey-space" aria-hidden="true">
+          <div class="journey-stars journey-stars-far"></div>
+          <div class="journey-stars journey-stars-near"></div>
+          <img class="journey-horizon journey-closing-horizon" src="images/hero-space.png" alt="" width="1916" height="821" draggable="false">
+        </div>
+
+        <div class="journey-closing-content container">
+          <p class="journey-closing-statement" aria-label="We have explored only a fraction of what exists. Beyond every discovery lies another mystery, another world, and another reason to keep looking up.">
+            <span class="closing-word">We</span>
+            <span class="closing-word">have</span>
+            <span class="closing-word">explored</span>
+            <span class="closing-word">only</span>
+            <span class="closing-word">a</span>
+            <span class="closing-word">fraction</span>
+            <span class="closing-word">of</span>
+            <span class="closing-word">what</span>
+            <span class="closing-word">exists.</span>
+            <span class="closing-word">Beyond</span>
+            <span class="closing-word">every</span>
+            <span class="closing-word">discovery</span>
+            <span class="closing-word">lies</span>
+            <span class="closing-word">another</span>
+            <span class="closing-word">mystery,</span>
+            <span class="closing-word">another</span>
+            <span class="closing-word">world,</span>
+            <span class="closing-word">and</span>
+            <span class="closing-word">another</span>
+            <span class="closing-word">reason</span>
+            <span class="closing-word">to</span>
+            <span class="closing-word">keep</span>
+            <span class="closing-word">looking</span>
+            <span class="closing-word">up.</span>
+          </p>
+          <h2 class="journey-closing-title" id="closing-title">THE JOURNEY CONTINUES.</h2>
+          <a class="journey-explore-link" href="explore.html">Continue exploring <span aria-hidden="true">→</span></a>
         </div>
       </div>
     </section>
@@ -132,7 +233,7 @@
 
         <div class="footer-column">
           <h2>Keep exploring</h2>
-          <a href="contact.html">Join the journey</a>
+          <a href="contact.html">The journey continues</a>
           <span>Made for curious minds</span>
         </div>
       </div>

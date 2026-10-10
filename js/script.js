@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const navLinks = document.querySelector(".nav-links");
   const scrollButton = document.querySelector(".scroll-top");
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const journeyMotion = setupJourneyScroll(reducedMotion.matches);
 
   menuButton?.addEventListener("click", () => {
     const isOpen = menuButton.classList.toggle("open");
@@ -26,6 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const hasScrolled = window.scrollY > 30;
     header?.classList.toggle("scrolled", hasScrolled);
     scrollButton?.classList.toggle("show", window.scrollY > 500);
+    journeyMotion?.requestUpdate();
   };
 
   window.addEventListener("scroll", handleScroll, { passive: true });
@@ -54,7 +56,6 @@ document.addEventListener("DOMContentLoaded", () => {
   setupJourneyVideo(reducedMotion.matches);
   setupPlanetGallery(reducedMotion.matches);
   setupGallery();
-  setupContactForm();
 });
 
 function setupSiteIntro() {
@@ -653,35 +654,254 @@ function setupGallery() {
   });
 }
 
-function setupContactForm() {
-  const form = document.querySelector("#contact-form");
-  if (!form) return;
+function setupJourneyScroll(reduceMotion) {
+  const journey = document.querySelector("[data-journey]");
+  if (!journey) return null;
 
-  const status = form.querySelector(".form-status");
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const opening = journey.querySelector("[data-journey-opening]");
+  const cosmos = journey.querySelector("[data-cosmos-story]");
+  const questions = journey.querySelector("[data-questions-story]");
+  const unknown = journey.querySelector("[data-unknown-story]");
+  const closing = journey.querySelector("[data-journey-closing]");
+  const cosmosWords = [...journey.querySelectorAll(".cosmos-word")];
+  const unknownWords = [...journey.querySelectorAll(".unknown-word")];
+  const unknownStatements = [...journey.querySelectorAll(".unknown-statement")];
+  const asteroids = [...journey.querySelectorAll(".asteroid")];
+  const closingWords = [...journey.querySelectorAll(".closing-word")];
+  const questionPanels = [...journey.querySelectorAll("[data-question-panel]")];
 
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const requiredFields = form.querySelectorAll("[required]");
-    let isValid = true;
+  if (reduceMotion) {
+    journey.classList.add("is-reduced");
+    return null;
+  }
 
-    requiredFields.forEach((field) => {
-      const invalidEmail = field.type === "email" && !emailPattern.test(field.value.trim());
-      const isEmpty = !field.value.trim();
-      field.classList.toggle("invalid", isEmpty || invalidEmail);
-      if (isEmpty || invalidEmail) isValid = false;
+  const clamp = (value, min = 0, max = 1) => Math.min(Math.max(value, min), max);
+  const smooth = (value) => value * value * (3 - 2 * value);
+  const range = (progress, start, end) => smooth(clamp((progress - start) / (end - start)));
+  const sections = [opening, cosmos, questions, unknown, closing].filter(Boolean);
+  const bounds = new Map();
+  const visibleSections = new Set();
+  const asteroidMotion = [
+    { x: 310, y: 150, startScale: 0.3, endScale: 1.5, rotation: 58, enter: 0.05, exit: 0.7 },
+    { x: -210, y: 175, startScale: 0.42, endScale: 1.18, rotation: -72, enter: 0.12, exit: 0.82 },
+    { x: 260, y: -180, startScale: 0.34, endScale: 1.3, rotation: 84, enter: 0.2, exit: 0.88 },
+    { x: -360, y: -160, startScale: 0.28, endScale: 1.65, rotation: -52, enter: 0.02, exit: 0.66 },
+    { x: 115, y: 210, startScale: 0.48, endScale: 1.05, rotation: 96, enter: 0.28, exit: 0.94 },
+    { x: -145, y: -205, startScale: 0.4, endScale: 1.18, rotation: -88, enter: 0.22, exit: 0.96 },
+    { x: -90, y: 80, startScale: 0.52, endScale: 1.08, rotation: 48, enter: 0.38, exit: 0.92 },
+  ];
+  let viewportWidth = document.documentElement.clientWidth;
+  let frame = 0;
+  let resizeFrame = 0;
+
+  const measure = () => {
+    viewportWidth = document.documentElement.clientWidth;
+    sections.forEach((section) => {
+      const rect = section.getBoundingClientRect();
+      bounds.set(section, {
+        top: rect.top + window.scrollY,
+        distance: Math.max(section.offsetHeight - window.innerHeight, 1),
+      });
+    });
+  };
+
+  const progressFor = (section) => {
+    const sectionBounds = bounds.get(section);
+    return sectionBounds
+      ? clamp((window.scrollY - sectionBounds.top) / sectionBounds.distance)
+      : 0;
+  };
+
+  const renderOpening = () => {
+    const progress = progressFor(opening);
+    const intro = range(progress, -0.12, 0.08);
+    const exit = 1 - range(progress, 0.76, 0.98);
+    const reveal = range(progress, 0.18, 0.7);
+    const settle = range(progress, 0.1, 0.62);
+    const lift = range(progress, 0.72, 0.96);
+
+    opening.style.setProperty("--opening-intro-alpha", (intro * exit).toFixed(4));
+    opening.style.setProperty("--opening-title-alpha", (intro * exit).toFixed(4));
+    opening.style.setProperty("--opening-title-y", `${(40 * (1 - intro) - 18 * lift).toFixed(2)}px`);
+    opening.style.setProperty("--opening-title-scale", (0.97 + settle * 0.05 - lift * 0.06).toFixed(4));
+    opening.style.setProperty("--opening-wipe", `${((1 - reveal) * 100).toFixed(2)}%`);
+    opening.style.setProperty("--opening-copy-alpha", (range(progress, 0.3, 0.52) * exit).toFixed(4));
+    opening.style.setProperty("--opening-copy-y", `${(16 * (1 - range(progress, 0.3, 0.52))).toFixed(2)}px`);
+    opening.style.setProperty("--opening-cue-alpha", (1 - range(progress, 0.06, 0.32)).toFixed(4));
+    opening.style.setProperty("--opening-horizon-alpha", (0.12 + range(progress, 0.22, 0.92) * 0.4).toFixed(4));
+    opening.style.setProperty("--horizon-y", `${(-18 * progress).toFixed(2)}px`);
+    opening.style.setProperty("--star-far-y", `${(-18 * progress).toFixed(2)}px`);
+    opening.style.setProperty("--star-near-y", `${(-34 * progress).toFixed(2)}px`);
+    opening.style.setProperty("--space-scale", (1 + progress * 0.02).toFixed(4));
+  };
+
+  const renderCosmos = () => {
+    const progress = progressFor(cosmos);
+    const departure = range(progress, 0.35, 0.65);
+    const earthFade = 1 - range(progress, 0.38, 0.68);
+    const spaceReveal = range(progress, 0.28, 0.74);
+    const mobileMotion = viewportWidth <= 580 ? 0.62 : viewportWidth <= 820 ? 0.8 : 1;
+
+    cosmos.style.setProperty("--cosmos-label-alpha", (0.82 * (1 - range(progress, 0.5, 0.65))).toFixed(4));
+    cosmos.style.setProperty("--cosmos-galaxy-alpha", (0.18 + spaceReveal * 0.54).toFixed(4));
+    cosmos.style.setProperty("--cosmos-galaxy-y", `${((18 - progress * 42) * mobileMotion).toFixed(2)}px`);
+    cosmos.style.setProperty("--cosmos-galaxy-scale", (1.08 - progress * 0.055).toFixed(4));
+    cosmos.style.setProperty("--cosmos-earth-alpha", (0.94 * earthFade).toFixed(4));
+    cosmos.style.setProperty("--cosmos-earth-x", `${(-120 * departure * mobileMotion).toFixed(2)}px`);
+    cosmos.style.setProperty("--cosmos-earth-y", `${((-6 * range(progress, 0, 0.35) - 20 * departure) * mobileMotion).toFixed(2)}px`);
+    cosmos.style.setProperty("--cosmos-earth-scale", (1 - departure * 0.48).toFixed(4));
+    cosmos.style.setProperty("--cosmos-earth-rotation", `${(-2.2 * departure).toFixed(3)}deg`);
+    cosmos.style.setProperty("--cosmos-stars-far-alpha", (0.18 + spaceReveal * 0.46).toFixed(4));
+    cosmos.style.setProperty("--cosmos-stars-near-alpha", (0.1 + spaceReveal * 0.38).toFixed(4));
+    cosmos.style.setProperty("--star-far-y", `${(-22 * progress).toFixed(2)}px`);
+    cosmos.style.setProperty("--star-near-y", `${(-46 * progress).toFixed(2)}px`);
+    cosmos.style.setProperty("--space-scale", (1 + progress * 0.035).toFixed(4));
+    const copyProgress = range(progress, 0.87, 0.97);
+    cosmos.style.setProperty("--cosmos-copy-alpha", copyProgress.toFixed(4));
+    cosmos.style.setProperty("--cosmos-copy-y", `${(18 * (1 - copyProgress)).toFixed(2)}px`);
+
+    cosmosWords.forEach((word, index) => {
+      const wordProgress = range(progress, 0.65 + index * 0.024, 0.76 + index * 0.024);
+      word.style.setProperty("--word-alpha", wordProgress.toFixed(4));
+      word.style.setProperty("--word-y", `${(28 * (1 - wordProgress)).toFixed(2)}px`);
+    });
+  };
+
+  const renderUnknown = () => {
+    const progress = progressFor(unknown);
+    const introIn = range(progress, -0.12, 0.04);
+    const introOut = 1 - range(progress, 0.34, 0.42);
+    const fieldStrength = range(progress, 0.02, 0.7) * (1 - range(progress, 0.9, 1));
+    const motionScale = viewportWidth <= 580 ? 0.45 : viewportWidth <= 820 ? 0.72 : 1;
+
+    unknown.style.setProperty("--unknown-intro-alpha", (introIn * introOut).toFixed(4));
+    unknown.style.setProperty("--unknown-intro-y", `${(28 * (1 - introIn) - 16 * (1 - introOut)).toFixed(2)}px`);
+    unknown.style.setProperty("--unknown-copy-alpha", (range(progress, 0.17, 0.27) * introOut).toFixed(4));
+    unknown.style.setProperty("--unknown-copy-y", `${(16 * (1 - range(progress, 0.17, 0.27))).toFixed(2)}px`);
+    unknown.style.setProperty("--unknown-field-alpha", (0.2 + fieldStrength * 0.55).toFixed(4));
+    unknown.style.setProperty("--unknown-near-alpha", (0.12 + fieldStrength * 0.48).toFixed(4));
+    unknown.style.setProperty("--unknown-far-x", `${(-18 * progress * motionScale).toFixed(2)}px`);
+    unknown.style.setProperty("--unknown-far-y", `${(-34 * progress * motionScale).toFixed(2)}px`);
+    unknown.style.setProperty("--unknown-far-scale", (1 + progress * 0.08 * motionScale).toFixed(4));
+    unknown.style.setProperty("--unknown-near-x", `${(25 * progress * motionScale).toFixed(2)}px`);
+    unknown.style.setProperty("--unknown-near-y", `${(-62 * progress * motionScale).toFixed(2)}px`);
+    unknown.style.setProperty("--unknown-near-scale", (1 + progress * 0.2 * motionScale).toFixed(4));
+
+    unknownWords.forEach((word, index) => {
+      const wordProgress = range(progress, -0.09 + index * 0.015, 0.045 + index * 0.015);
+      word.style.setProperty("--word-alpha", wordProgress.toFixed(4));
+      word.style.setProperty("--word-y", `${(22 * (1 - wordProgress)).toFixed(2)}px`);
     });
 
-    if (!isValid) {
-      status.textContent = "Please complete every field with a valid email address.";
-      return;
-    }
+    const statementTiming = [
+      { enter: 0.4, settle: 0.46, exit: 0.52, end: 0.58 },
+      { enter: 0.58, settle: 0.64, exit: 0.7, end: 0.76 },
+      { enter: 0.76, settle: 0.82, exit: 0.91, end: 0.98 },
+    ];
 
-    status.textContent = "Message received! Your journey with us starts here.";
-    form.reset();
-  });
+    unknownStatements.forEach((statement, index) => {
+      const timing = statementTiming[index];
+      const statementIn = range(progress, timing.enter, timing.settle);
+      const statementOut = 1 - range(progress, timing.exit, timing.end);
+      const alpha = statementIn * statementOut;
 
-  form.querySelectorAll("input, textarea").forEach((field) => {
-    field.addEventListener("input", () => field.classList.remove("invalid"));
-  });
+      statement.style.setProperty("--statement-alpha", alpha.toFixed(4));
+      statement.style.setProperty("--statement-y", `${(26 * (1 - statementIn) - 18 * (1 - statementOut)).toFixed(2)}px`);
+      statement.style.setProperty("--statement-scale", (0.985 + statementIn * 0.015).toFixed(4));
+      [...statement.children].forEach((word, wordIndex) => {
+        const wordProgress = range(progress, timing.enter + wordIndex * 0.012, timing.settle + wordIndex * 0.012);
+        word.style.setProperty("--word-alpha", wordProgress.toFixed(4));
+        word.style.setProperty("--word-y", `${(18 * (1 - wordProgress)).toFixed(2)}px`);
+      });
+    });
+
+    asteroids.forEach((asteroid, index) => {
+      const motion = asteroidMotion[index];
+      const travel = range(progress, motion.enter, motion.exit);
+      const fadeIn = range(progress, motion.enter, motion.enter + 0.1);
+      const fadeOut = 1 - range(progress, motion.exit - 0.08, motion.exit);
+      const x = motion.x * (travel - 0.45) * motionScale;
+      const y = motion.y * (travel - 0.45) * motionScale;
+      const scale = motion.startScale + (motion.endScale - motion.startScale) * travel;
+      const rotation = motion.rotation * travel;
+
+      asteroid.style.setProperty("--asteroid-alpha", (fadeIn * fadeOut * 0.78).toFixed(4));
+      asteroid.style.setProperty("--asteroid-transform", `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0) scale(${scale.toFixed(4)}) rotate(${rotation.toFixed(2)}deg)`);
+    });
+  };
+
+  const renderQuestions = () => {
+    if (viewportWidth <= 820) return;
+    const progress = progressFor(questions);
+    const travel = range(progress, 0.06, 0.94);
+    questions.style.setProperty("--questions-shift", `${(-2 * viewportWidth * travel).toFixed(2)}px`);
+    questions.style.setProperty("--questions-heading-alpha", (1 - range(progress, 0.04, 0.2)).toFixed(4));
+
+    questionPanels.forEach((panel, index) => {
+      const center = index / 2;
+      const emphasis = smooth(clamp(1 - Math.abs(travel - center) * 2));
+      panel.style.setProperty("--panel-alpha", (0.28 + emphasis * 0.72).toFixed(4));
+      panel.style.setProperty("--panel-image-y", `${(28 * (1 - emphasis)).toFixed(2)}px`);
+      panel.style.setProperty("--panel-image-scale", (0.96 + emphasis * 0.04).toFixed(4));
+      panel.style.setProperty("--panel-copy-y", `${(24 * (1 - emphasis)).toFixed(2)}px`);
+    });
+  };
+
+  const renderClosing = () => {
+    const progress = progressFor(closing);
+    const enter = range(progress, 0.04, 0.24);
+    closing.style.setProperty("--closing-content-alpha", enter.toFixed(4));
+    closing.style.setProperty("--closing-content-y", `${(34 * (1 - enter)).toFixed(2)}px`);
+    closing.style.setProperty("--closing-horizon-alpha", (0.12 + range(progress, 0.08, 0.94) * 0.8).toFixed(4));
+    closing.style.setProperty("--closing-title-alpha", range(progress, 0.63, 0.8).toFixed(4));
+    closing.style.setProperty("--closing-title-y", `${(24 * (1 - range(progress, 0.63, 0.8))).toFixed(2)}px`);
+    closing.style.setProperty("--closing-link-alpha", range(progress, 0.79, 0.92).toFixed(4));
+    closing.style.setProperty("--horizon-y", `${(-22 * progress).toFixed(2)}px`);
+    closing.style.setProperty("--star-far-y", `${(-20 * progress).toFixed(2)}px`);
+    closing.style.setProperty("--star-near-y", `${(-42 * progress).toFixed(2)}px`);
+    closing.style.setProperty("--space-scale", (1 + progress * 0.025).toFixed(4));
+
+    closingWords.forEach((word, index) => {
+      const wordProgress = range(progress, 0.1 + index * 0.012, 0.32 + index * 0.012);
+      word.style.setProperty("--word-alpha", wordProgress.toFixed(4));
+      word.style.setProperty("--word-y", `${(16 * (1 - wordProgress)).toFixed(2)}px`);
+    });
+  };
+
+  const render = () => {
+    frame = 0;
+    if (visibleSections.has(opening)) renderOpening();
+    if (visibleSections.has(cosmos)) renderCosmos();
+    if (visibleSections.has(questions)) renderQuestions();
+    if (visibleSections.has(unknown)) renderUnknown();
+    if (visibleSections.has(closing)) renderClosing();
+  };
+
+  const requestUpdate = () => {
+    if (frame) return;
+    frame = window.requestAnimationFrame(render);
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) visibleSections.add(entry.target);
+      else visibleSections.delete(entry.target);
+    });
+    requestUpdate();
+  }, { threshold: 0 });
+
+  window.addEventListener("resize", () => {
+    window.cancelAnimationFrame(resizeFrame);
+    resizeFrame = window.requestAnimationFrame(() => {
+      measure();
+      requestUpdate();
+    });
+  }, { passive: true });
+
+  sections.forEach((section) => observer.observe(section));
+  measure();
+  sections.forEach((section) => visibleSections.add(section));
+  render();
+
+  return { requestUpdate };
 }
