@@ -1,4 +1,6 @@
 // Shared navigation, scroll effects and page interactions.
+setupSiteIntro();
+
 document.addEventListener("DOMContentLoaded", () => {
   const header = document.querySelector(".site-header");
   const menuButton = document.querySelector(".menu-toggle");
@@ -54,6 +56,72 @@ document.addEventListener("DOMContentLoaded", () => {
   setupGallery();
   setupContactForm();
 });
+
+function setupSiteIntro() {
+  const intro = document.querySelector("[data-site-intro]");
+  if (!intro) return;
+
+  const root = document.documentElement;
+  const sessionKey = "space-explorer-intro-seen";
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let hasPlayed = false;
+
+  try {
+    hasPlayed = window.sessionStorage.getItem(sessionKey) === "true";
+  } catch {
+    // The intro can still run if storage is unavailable; the hidden fallback remains safe.
+  }
+
+  if (hasPlayed || reduceMotion) {
+    if (reduceMotion) {
+      try {
+        window.sessionStorage.setItem(sessionKey, "true");
+      } catch {
+        // Storage may be disabled in privacy-focused browsing modes.
+      }
+    }
+    intro.remove();
+    return;
+  }
+
+  try {
+    window.sessionStorage.setItem(sessionKey, "true");
+  } catch {
+    // Continue without persistence rather than blocking the page.
+  }
+
+  const scrollbarGap = Math.max(window.innerWidth - root.clientWidth, 0);
+  root.style.setProperty("--intro-scrollbar-gap", `${scrollbarGap}px`);
+  root.classList.add("site-intro-active", "site-intro-hold");
+  intro.hidden = false;
+
+  requestAnimationFrame(() => {
+    intro.classList.add("is-visible");
+  });
+
+  let cleanedUp = false;
+  const cleanup = () => {
+    if (cleanedUp) return;
+    cleanedUp = true;
+    root.classList.remove("site-intro-active", "site-intro-hold");
+    root.style.removeProperty("--intro-scrollbar-gap");
+    intro.remove();
+  };
+
+  window.setTimeout(() => {
+    intro.classList.add("is-leaving");
+    root.classList.remove("site-intro-hold");
+  }, 1300);
+
+  intro.addEventListener("transitionend", (event) => {
+    if (event.target === intro && event.propertyName === "opacity" && intro.classList.contains("is-leaving")) {
+      cleanup();
+    }
+  });
+
+  // Backup cleanup keeps the page usable if a transition is interrupted.
+  window.setTimeout(cleanup, 2200);
+}
 
 function setupJourneyVideo(reduceMotion) {
   const video = document.querySelector(".journey-cinema-video");
